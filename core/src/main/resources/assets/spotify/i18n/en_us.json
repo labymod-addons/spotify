@@ -1,0 +1,15 @@
+{
+  "spotify": {
+    "hudWidget" : {
+      "spotify_track": {
+        "name": "Spotify"
+      }
+    },
+    "settings": {
+      "name": "Spotify",
+      "enabled": {
+        "name": "Enabled"
+      }
+    }
+  }
+}
