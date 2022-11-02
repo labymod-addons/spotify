@@ -4,15 +4,15 @@ import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.SpotifyAPIFactory;
 import de.labystudio.spotifyapi.SpotifyListener;
 import de.labystudio.spotifyapi.model.Track;
-import net.labymod.api.client.gui.hud2.text.NewTextHudWidget;
-import net.labymod.api.client.gui.hud2.text.NewTextHudWidgetConfig;
-import net.labymod.api.client.gui.hud2.text.NewTextLine;
+import net.labymod.api.client.gui.hud.hudwidget.text.TextHudWidget;
+import net.labymod.api.client.gui.hud.hudwidget.text.TextHudWidgetConfig;
+import net.labymod.api.client.gui.hud.hudwidget.text.TextLine;
 
 
-public class SpotifyTrackHudWidget extends NewTextHudWidget<NewTextHudWidgetConfig> implements
+public class SpotifyTrackHudWidget extends TextHudWidget<TextHudWidgetConfig> implements
     SpotifyListener {
-  private NewTextLine trackLine;
-  private NewTextLine artistLine;
+  private TextLine trackLine;
+  private TextLine artistLine;
 
   private final SpotifyAPI spotifyAPI = SpotifyAPIFactory.create();
 
@@ -21,7 +21,7 @@ public class SpotifyTrackHudWidget extends NewTextHudWidget<NewTextHudWidgetConf
   }
 
   @Override
-  public void load(NewTextHudWidgetConfig config) {
+  public void load(TextHudWidgetConfig config) {
     super.load(config);
     this.trackLine = super.createLine("Track", "Loading...");
     this.artistLine = super.createLine("Artist", "Loading...");

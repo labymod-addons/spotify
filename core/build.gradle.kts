@@ -20,7 +20,7 @@ dependencies {
     // You have to specify the repository, there are getters for maven central and sonatype, every
     // other repository has to be specified with their url. Example:
     // maven(mavenCentral(), "org.apache.httpcomponents:httpclient:4.5.13")
-    implementation("com.github.LabyStudio:java-spotify-api:1.1.5:all")
+    maven("https://jitpack.io/","com.github.LabyStudio:java-spotify-api:1.1.5:all")
 }
 
 java {
