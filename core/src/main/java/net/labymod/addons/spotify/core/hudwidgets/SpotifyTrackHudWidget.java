@@ -37,17 +37,18 @@ public class SpotifyTrackHudWidget extends TextHudWidget<TextHudWidgetConfig> im
 
   @Override
   public void onConnect() {
-    if (spotifyAPI.isPlaying()) {
-      this.onTrackChanged(spotifyAPI.getTrack());
-    } else {
-      this.onPlayBackChanged(false);
-    }
+    this.onPlayBackChanged(this.spotifyAPI.isPlaying());
   }
 
   @Override
   public void onTrackChanged(Track track) {
-    this.trackLine.update(track.getName());
-    this.artistLine.update(track.getArtist());
+    if (track == null) {
+      this.onPlayBackChanged(false);
+    } else {
+      this.trackLine.update(track.getName());
+      this.artistLine.update(track.getArtist());
+    }
+
     this.flushAll();
   }
 
@@ -61,6 +62,8 @@ public class SpotifyTrackHudWidget extends TextHudWidget<TextHudWidgetConfig> im
     if (!isPlaying) {
       this.trackLine.update("Not playing");
       this.artistLine.update("Not playing");
+    } else {
+      this.onTrackChanged(this.spotifyAPI.getTrack());
     }
   }
 
