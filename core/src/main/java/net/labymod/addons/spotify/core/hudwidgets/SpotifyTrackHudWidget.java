@@ -23,12 +23,16 @@ import de.labystudio.spotifyapi.model.Track;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextHudWidget;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextHudWidgetConfig;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextLine;
-
+import net.labymod.api.client.gui.icon.Icon;
+import net.labymod.api.client.resources.ResourceLocation;
 
 public class SpotifyTrackHudWidget extends TextHudWidget<TextHudWidgetConfig> implements
     SpotifyListener {
   private TextLine trackLine;
   private TextLine artistLine;
+
+  private final Icon hudIcon = Icon.texture(
+      ResourceLocation.create("spotify", "themes/vanilla/textures/settings/hud/spotify.png")).resolution(64,64);
 
   private final SpotifyAPI spotifyAPI = SpotifyAPIFactory.create();
 
@@ -44,6 +48,8 @@ public class SpotifyTrackHudWidget extends TextHudWidget<TextHudWidgetConfig> im
 
     this.spotifyAPI.registerListener(this);
     this.spotifyAPI.initializeAsync();
+
+    this.setIcon(hudIcon);
   }
 
   @Override
