@@ -1,0 +1,119 @@
+.spotify {
+
+  Spotify {
+    top: 0;
+    left: 0;
+    height: 34;
+    min-width: 170;
+    max-width: 400;
+
+    .spotify-player-widget {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #1a1a1a;
+      orientation: horizontal;
+
+      &.minimized {
+        background-color: rgba(0, 0, 0, 0);
+
+        .controls {
+          opacity: 0;
+        }
+      }
+
+      .player {
+        height: 100%;
+        orientation: vertical;
+        width: 136;
+
+        .control-and-text {
+          height: 100%;
+          orientation: horizontal;
+
+          .right {
+            Component {
+              alignment-x: right;
+            }
+          }
+
+          Component {
+            left: 0;
+            top: 0;
+            max-lines: 1;
+            overflow-strategy: clip;
+            width: 100%;
+          }
+
+          .controls {
+            height: 100%;
+            width: 30;
+            padding: 1;
+
+            Icon {
+              width: 8;
+              height: 8;
+            }
+
+            .play {
+              top: 50%;
+              left: 50%;
+              alignment-x: center;
+              alignment-y: center;
+            }
+
+            .previous {
+              top: 50%;
+              left: 0;
+              alignment-y: center;
+            }
+
+            .next {
+              top: 50%;
+              right: 0;
+              alignment-y: center;
+            }
+          }
+
+          .text {
+            margin-left: 2;
+            margin-right: 2;
+          }
+        }
+
+        .progress {
+          orientation: horizontal;
+          height: 8;
+          width: 100%;
+
+          .bar-wrapper {
+            width: 100%;
+            height: 100%;
+
+            .bar {
+              left: 0;
+              top: 50%;
+              height: 2;
+              width: 100%;
+              alignment-y: center;
+              padding-bottom: 2;
+            }
+          }
+
+          Component {
+            font-size: small;
+            padding: 0 2 0 2;
+          }
+        }
+      }
+
+      .cover {
+        width: 34;
+        height: 34;
+        right: 0;
+        top: 0;
+      }
+    }
+  }
+}

@@ -17,33 +17,41 @@
 package net.labymod.addons.spotify.core.hudwidgets;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
-import de.labystudio.spotifyapi.SpotifyAPIFactory;
-import de.labystudio.spotifyapi.SpotifyListener;
 import de.labystudio.spotifyapi.model.Track;
+import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
+import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextHudWidget;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextHudWidgetConfig;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextLine;
+import net.labymod.api.client.gui.screen.widget.AbstractWidget;
+import net.labymod.api.client.gui.screen.widget.Widget;
+import net.labymod.api.event.Subscribe;
 
 
-public class SpotifyTrackHudWidget extends TextHudWidget<TextHudWidgetConfig> implements
-    SpotifyListener {
+public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
+
   private TextLine trackLine;
   private TextLine artistLine;
 
-  private final SpotifyAPI spotifyAPI = SpotifyAPIFactory.create();
+  private final SpotifyAPI spotifyAPI;
 
-  public SpotifyTrackHudWidget(String id) {
+  public SpotifyTextHudWidget(String id, SpotifyAPI spotifyAPI) {
     super(id);
+
+    this.spotifyAPI = spotifyAPI;
   }
 
   @Override
   public void load(TextHudWidgetConfig config) {
     super.load(config);
+
     this.trackLine = super.createLine("Track", "Loading...");
     this.artistLine = super.createLine("Artist", "Loading...");
+  }
 
-    this.spotifyAPI.registerListener(this);
-    this.spotifyAPI.initializeAsync();
+  @Override
+  public void initialize(AbstractWidget<Widget> widget) {
+    super.initialize(widget);
   }
 
   @Override
@@ -51,12 +59,16 @@ public class SpotifyTrackHudWidget extends TextHudWidget<TextHudWidgetConfig> im
     return spotifyAPI.isConnected() && spotifyAPI.isPlaying();
   }
 
-  @Override
-  public void onConnect() {
+  @Subscribe
+  public void onSpotifyConnectEvent(SpotifyConnectEvent event) {
     this.onPlayBackChanged(this.spotifyAPI.isPlaying());
   }
 
-  @Override
+  @Subscribe
+  public void onSpotifyTrackChangedEvent(SpotifyTrackChangedEvent event) {
+    this.onTrackChanged(event.getTrack());
+  }
+
   public void onTrackChanged(Track track) {
     if (track == null) {
       this.onPlayBackChanged(false);
@@ -68,12 +80,6 @@ public class SpotifyTrackHudWidget extends TextHudWidget<TextHudWidgetConfig> im
     this.flushAll();
   }
 
-  @Override
-  public void onPositionChanged(int position) {
-
-  }
-
-  @Override
   public void onPlayBackChanged(boolean isPlaying) {
     if (!isPlaying) {
       this.trackLine.update("Not playing");
@@ -83,12 +89,4 @@ public class SpotifyTrackHudWidget extends TextHudWidget<TextHudWidgetConfig> im
     }
   }
 
-  @Override
-  public void onSync() {
-  }
-
-  @Override
-  public void onDisconnect(Exception exception) {
-
-  }
 }

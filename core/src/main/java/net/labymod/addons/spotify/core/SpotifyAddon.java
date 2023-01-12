@@ -17,7 +17,10 @@
 package net.labymod.addons.spotify.core;
 
 import com.google.inject.Singleton;
-import net.labymod.addons.spotify.core.hudwidgets.SpotifyTrackHudWidget;
+import de.labystudio.spotifyapi.SpotifyAPI;
+import de.labystudio.spotifyapi.SpotifyAPIFactory;
+import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
+import net.labymod.addons.spotify.core.hudwidgets.SpotifyTextHudWidget;
 import net.labymod.api.addon.LabyAddon;
 import net.labymod.api.models.addon.annotation.AddonListener;
 
@@ -29,7 +32,14 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
   protected void enable() {
     this.registerSettingCategory();
 
-    this.labyAPI().hudWidgetRegistry().register(new SpotifyTrackHudWidget("spotify_track"));
+    SpotifyAPI spotifyAPI = SpotifyAPIFactory.create();
+    SpotifyApiListener spotifyApiListener = new SpotifyApiListener();
+
+    spotifyAPI.registerListener(spotifyApiListener);
+    spotifyAPI.initializeAsync();
+
+    this.labyAPI().hudWidgetRegistry().register(new SpotifyTextHudWidget("spotify_track", spotifyAPI));
+    this.labyAPI().hudWidgetRegistry().register(new SpotifyHudWidget("spotify", spotifyAPI));
   }
 
   @Override

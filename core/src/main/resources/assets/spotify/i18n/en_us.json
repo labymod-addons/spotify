@@ -2,7 +2,14 @@
   "spotify": {
     "hudWidget" : {
       "spotify_track": {
-        "name": "Spotify"
+        "name": "Spotify Track"
+      },
+      "spotify": {
+        "name": "Spotify",
+        "showCover": {
+          "name": "Show Cover",
+          "description": "Show the album cover of the current track"
+        }
       }
     },
     "settings": {
