@@ -32,7 +32,7 @@ public class SpotifyTrackHudWidget extends TextHudWidget<TextHudWidgetConfig> im
   private TextLine artistLine;
 
   private final Icon hudIcon = Icon.texture(
-      ResourceLocation.create("spotify", "themes/vanilla/textures/settings/hud/spotify.png")).resolution(64,64);
+      ResourceLocation.create("spotify", "themes/vanilla/textures/settings/hud/spotify32.png")).resolution(64,64);
 
   private final SpotifyAPI spotifyAPI = SpotifyAPIFactory.create();
 
