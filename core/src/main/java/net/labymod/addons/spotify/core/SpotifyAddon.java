@@ -16,16 +16,14 @@
 
 package net.labymod.addons.spotify.core;
 
-import com.google.inject.Singleton;
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.SpotifyAPIFactory;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyTextHudWidget;
 import net.labymod.api.addon.LabyAddon;
-import net.labymod.api.models.addon.annotation.AddonListener;
+import net.labymod.api.models.addon.annotation.AddonMain;
 
-@Singleton
-@AddonListener
+@AddonMain
 public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
 
   @Override
