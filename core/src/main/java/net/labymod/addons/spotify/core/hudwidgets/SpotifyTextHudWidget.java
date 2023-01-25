@@ -27,12 +27,18 @@ import net.labymod.api.client.gui.screen.widget.AbstractWidget;
 import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.event.Subscribe;
 
+import net.labymod.api.client.gui.icon.Icon;
+import net.labymod.api.client.resources.ResourceLocation;
 
 public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
 
   private TextLine trackLine;
   private TextLine artistLine;
 
+  private final Icon hudIcon = Icon.texture(
+      ResourceLocation.create("spotify", "themes/vanilla/textures/settings/hud/spotify32.png")).resolution(64,64);
+
+  private final SpotifyAPI spotifyAPI = SpotifyAPIFactory.create();
   private final SpotifyAPI spotifyAPI;
 
   public SpotifyTextHudWidget(String id, SpotifyAPI spotifyAPI) {
@@ -49,6 +55,10 @@ public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
     this.artistLine = super.createLine("Artist", "Loading...");
   }
 
+    this.spotifyAPI.registerListener(this);
+    this.spotifyAPI.initializeAsync();
+
+    this.setIcon(hudIcon);
   @Override
   public void initialize(AbstractWidget<Widget> widget) {
     super.initialize(widget);
