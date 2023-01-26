@@ -35,15 +35,13 @@ public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
   private TextLine trackLine;
   private TextLine artistLine;
 
-  private final Icon hudIcon = Icon.texture(
-      ResourceLocation.create("spotify", "themes/vanilla/textures/settings/hud/spotify32.png")).resolution(64,64);
-
-  private final SpotifyAPI spotifyAPI = SpotifyAPIFactory.create();
+  private final Icon hudWidgetIcon;
   private final SpotifyAPI spotifyAPI;
 
-  public SpotifyTextHudWidget(String id, SpotifyAPI spotifyAPI) {
+  public SpotifyTextHudWidget(String id, Icon icon, SpotifyAPI spotifyAPI) {
     super(id);
 
+    this.hudWidgetIcon = icon;
     this.spotifyAPI = spotifyAPI;
   }
 
@@ -53,12 +51,10 @@ public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
 
     this.trackLine = super.createLine("Track", "Loading...");
     this.artistLine = super.createLine("Artist", "Loading...");
+
+    this.setIcon(this.hudWidgetIcon);
   }
 
-    this.spotifyAPI.registerListener(this);
-    this.spotifyAPI.initializeAsync();
-
-    this.setIcon(hudIcon);
   @Override
   public void initialize(AbstractWidget<Widget> widget) {
     super.initialize(widget);

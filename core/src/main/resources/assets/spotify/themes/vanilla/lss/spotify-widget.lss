@@ -18,9 +18,9 @@
       &.minimized {
         background-color: rgba(0, 0, 0, 0);
 
-        .controls {
-          opacity: 0;
-        }
+        //.controls {
+        //  opacity: 0;
+        //}
       }
 
       .player {

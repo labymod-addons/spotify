@@ -20,9 +20,10 @@ import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.model.MediaKey;
 import de.labystudio.spotifyapi.model.Track;
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
-import net.kyori.adventure.text.Component;
 import net.labymod.addons.spotify.core.Textures.SpriteControls;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
+import net.labymod.api.Laby;
+import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.Parent;
@@ -44,7 +45,8 @@ public class SpotifyWidget extends SimpleWidget {
   private IconWidget iconWidget;
   private ComponentWidget currentTimeWidget;
   private ComponentWidget totalTimeWidget;
-  private IconWidget playButton;
+  private FlexibleContentWidget spotifyPlayerWidget;
+  private boolean chatOpen = false;
 
   public SpotifyWidget(SpotifyHudWidget hudWidget) {
     this.hudWidget = hudWidget;
@@ -62,13 +64,13 @@ public class SpotifyWidget extends SimpleWidget {
     this.artistWidget = ComponentWidget.text("Loading...");
 
     // Player and Progress
-    FlexibleContentWidget spotifyPlayerWidget = new FlexibleContentWidget();
-    spotifyPlayerWidget.addId("spotify-player-widget");
+    this.spotifyPlayerWidget = new FlexibleContentWidget();
+    this.spotifyPlayerWidget.addId("spotify-player-widget");
     {
       // Icon
       boolean alignmentRight = this.hudWidget.anchor().isRight();
       if (!alignmentRight && this.hudWidget.getConfig().showCover().get()) {
-        spotifyPlayerWidget.addContent(this.iconWidget);
+        this.spotifyPlayerWidget.addContent(this.iconWidget);
       }
 
       // Player
@@ -79,18 +81,18 @@ public class SpotifyWidget extends SimpleWidget {
         FlexibleContentWidget controlAndTextWrapper = new FlexibleContentWidget();
         controlAndTextWrapper.addId("control-and-text");
         {
-          // Controls
           DivWidget controlsWrapper = new DivWidget();
+          // Controls
           controlsWrapper.addId("controls");
           {
-            this.playButton = new IconWidget(
+            IconWidget playButton = new IconWidget(
                 this.spotifyAPI.isPlaying() ? SpriteControls.PAUSE : SpriteControls.PLAY);
-            this.playButton.addId("play");
-            this.playButton.setPressable(() -> {
+            playButton.addId("play");
+            playButton.setPressable(() -> {
               this.spotifyAPI.pressMediaKey(MediaKey.PLAY_PAUSE);
               this.reInitialize();
             });
-            controlsWrapper.addChild(this.playButton);
+            controlsWrapper.addChild(playButton);
 
             IconWidget previousTrack = new IconWidget(SpriteControls.PREVIOUS);
             previousTrack.addId("previous");
@@ -146,26 +148,32 @@ public class SpotifyWidget extends SimpleWidget {
         }
         playerWrapper.addContent(progressWrapper);
       }
-      spotifyPlayerWidget.addFlexibleContent(playerWrapper);
+      this.spotifyPlayerWidget.addFlexibleContent(playerWrapper);
 
       // Icon
       if (alignmentRight && this.hudWidget.getConfig().showCover().get()) {
-        spotifyPlayerWidget.addContent(this.iconWidget);
+        this.spotifyPlayerWidget.addContent(this.iconWidget);
       }
     }
 
-//    if (this.labyAPI.minecraft().minecraftWindow().currentScreen()) {
-//      spotifyPlayerWidget.addId("minimized");
-//    }
-
-    this.addChild(spotifyPlayerWidget);
-
+    this.addChild(this.spotifyPlayerWidget);
     this.updateTrack(this.spotifyAPI.getTrack());
   }
 
   @Override
   public void tick() {
     super.tick();
+
+    // ToDo: implement minimized version when chat is closed
+    boolean isChatOpen = Laby.references().chatAccessor().isChatOpen();
+    if (this.chatOpen != isChatOpen) {
+      if (isChatOpen) {
+        this.spotifyPlayerWidget.removeId("minimized");
+      } else {
+        this.spotifyPlayerWidget.addId("minimized");
+      }
+      this.chatOpen = isChatOpen;
+    }
 
     if (this.spotifyAPI.hasPosition() && this.currentTimeWidget != null) {
       int position = this.spotifyAPI.getPosition() / 1000;

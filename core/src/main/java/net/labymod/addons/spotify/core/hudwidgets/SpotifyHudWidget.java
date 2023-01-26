@@ -24,12 +24,13 @@ import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget.SpotifyHudWid
 import net.labymod.addons.spotify.core.widgets.SpotifyWidget;
 import net.labymod.api.client.gui.hud.hudwidget.HudWidgetConfig;
 import net.labymod.api.client.gui.hud.hudwidget.widget.WidgetHudWidget;
+import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.gui.screen.activity.Link;
 import net.labymod.api.client.gui.screen.widget.AbstractWidget;
 import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.SwitchWidget.SwitchSetting;
 import net.labymod.api.configuration.loader.property.ConfigProperty;
-import net.labymod.api.configuration.settings.annotation.SettingSwitchable;
+import net.labymod.api.event.Priority;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.client.gui.screen.ScreenOpenEvent;
 import net.labymod.api.util.ThreadSafe;
@@ -38,16 +39,24 @@ import net.labymod.api.util.ThreadSafe;
 public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
 
   private final SpotifyAPI spotifyAPI;
+  private final Icon hudWidgetIcon;
 
-  public SpotifyHudWidget(String id, SpotifyAPI spotifyAPI) {
+  public SpotifyHudWidget(String id, Icon icon, SpotifyAPI spotifyAPI) {
     super(id, SpotifyHudWidgetConfig.class);
 
+    this.hudWidgetIcon = icon;
     this.spotifyAPI = spotifyAPI;
   }
 
   @Override
   public void load(SpotifyHudWidgetConfig config) {
     super.load(config);
+
+    this.setIcon(this.hudWidgetIcon);
+
+    config.showCover.addChangeListener(
+        (property, oldValue, newValue) -> ThreadSafe.executeOnRenderThread(this::requestUpdate)
+    );
   }
 
   @Override
@@ -95,7 +104,6 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   public static class SpotifyHudWidgetConfig extends HudWidgetConfig {
 
     @SwitchSetting
-    @SettingSwitchable(value = "showCover")
     private final ConfigProperty<Boolean> showCover = ConfigProperty.create(true);
 
 

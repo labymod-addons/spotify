@@ -21,10 +21,17 @@ import de.labystudio.spotifyapi.SpotifyAPIFactory;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyTextHudWidget;
 import net.labymod.api.addon.LabyAddon;
+import net.labymod.api.client.gui.hud.HudWidgetRegistry;
+import net.labymod.api.client.gui.icon.Icon;
+import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.models.addon.annotation.AddonMain;
 
 @AddonMain
 public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
+
+  private final Icon hudIcon = Icon.texture(
+          ResourceLocation.create("spotify", "themes/vanilla/textures/settings/hud/spotify32.png"))
+      .resolution(64, 64);
 
   @Override
   protected void enable() {
@@ -36,8 +43,9 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     spotifyAPI.registerListener(spotifyApiListener);
     spotifyAPI.initializeAsync();
 
-    this.labyAPI().hudWidgetRegistry().register(new SpotifyTextHudWidget("spotify_track", spotifyAPI));
-    this.labyAPI().hudWidgetRegistry().register(new SpotifyHudWidget("spotify", spotifyAPI));
+    HudWidgetRegistry registry = this.labyAPI().hudWidgetRegistry();
+    registry.register(new SpotifyTextHudWidget("spotify_track", this.hudIcon, spotifyAPI));
+    registry.register(new SpotifyHudWidget("spotify", this.hudIcon, spotifyAPI));
   }
 
   @Override
