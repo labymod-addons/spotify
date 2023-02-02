@@ -44,7 +44,7 @@ public class SpotifyApiListener implements SpotifyListener {
 
   @Override
   public void onPositionChanged(int position) {
-
+    // not needed
   }
 
   @Override
@@ -54,11 +54,11 @@ public class SpotifyApiListener implements SpotifyListener {
 
   @Override
   public void onSync() {
-
+    // not needed
   }
 
   @Override
   public void onDisconnect(Exception exception) {
-
+    // not needed
   }
 }

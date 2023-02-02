@@ -1,6 +1,6 @@
 {
   "spotify": {
-    "hudWidget" : {
+    "hudWidget": {
       "spotify_track": {
         "name": "Spotify Track"
       },
@@ -9,6 +9,10 @@
         "showCover": {
           "name": "Show Cover",
           "description": "Show the album cover of the current track"
+        },
+        "minimizeIngame": {
+          "name": "Minimize In-Game",
+          "description": "Minimize the widget when in game and maximize it again when the chat is open. If disabled, the widget will be maximized permanently."
         }
       }
     },

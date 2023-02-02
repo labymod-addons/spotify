@@ -17,26 +17,26 @@
 package net.labymod.addons.spotify.core.widgets;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
+import net.labymod.api.Laby;
+import net.labymod.api.client.gui.lss.property.LssProperty;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.mouse.MutableMouse;
-import net.labymod.api.client.gui.screen.Parent;
 import net.labymod.api.client.gui.screen.widget.SimpleWidget;
 import net.labymod.api.client.gui.screen.widget.attributes.bounds.Bounds;
+import net.labymod.api.client.render.draw.RectangleRenderer;
 import net.labymod.api.client.render.matrix.Stack;
-import net.labymod.api.util.ColorUtil;
 
 @AutoWidget
 public class ProgressBarWidget extends SimpleWidget {
 
+  private static final RectangleRenderer RECTANGLE_RENDERER = Laby.references().rectangleRenderer();
+
   private final SpotifyAPI spotifyAPI;
+
+  private final LssProperty<Integer> foregroundColor = new LssProperty<>(0x00FF00);
 
   public ProgressBarWidget(SpotifyAPI api) {
     this.spotifyAPI = api;
-  }
-
-  @Override
-  public void initialize(Parent parent) {
-    super.initialize(parent);
   }
 
   @Override
@@ -44,26 +44,18 @@ public class ProgressBarWidget extends SimpleWidget {
     super.renderWidget(stack, mouse, partialTicks);
 
     float progress = this.spotifyAPI.hasTrack() && this.spotifyAPI.hasPosition()
-        ? 1.0F / this.spotifyAPI.getTrack().getLength() * (float) this.spotifyAPI.getPosition()
+        ? 1.0F / this.spotifyAPI.getTrack().getLength() * this.spotifyAPI.getPosition()
         : 0;
 
     Bounds bounds = this.bounds();
-    this.labyAPI.renderPipeline()
-        .rectangleRenderer()
-        .renderRectangle(
-            stack,
-            bounds,
-            ColorUtil.toValue(0x444444)
-        );
-    this.labyAPI.renderPipeline()
-        .rectangleRenderer()
-        .renderRectangle(
-            stack,
-            bounds.getLeft(),
-            bounds.getTop(),
-            bounds.getLeft() + bounds.getWidth() * progress,
-            bounds.getBottom(),
-            ColorUtil.toValue(0x00FF00)
-        );
+    RECTANGLE_RENDERER
+        .pos(bounds.getLeft(), bounds.getTop())
+        .size(bounds.getWidth() * progress, bounds.getHeight())
+        .color(this.foregroundColor.get())
+        .render(stack);
+  }
+
+  public LssProperty<Integer> foregroundColor() {
+    return this.foregroundColor;
   }
 }

@@ -23,12 +23,8 @@ import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextHudWidget;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextHudWidgetConfig;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextLine;
-import net.labymod.api.client.gui.screen.widget.AbstractWidget;
-import net.labymod.api.client.gui.screen.widget.Widget;
-import net.labymod.api.event.Subscribe;
-
 import net.labymod.api.client.gui.icon.Icon;
-import net.labymod.api.client.resources.ResourceLocation;
+import net.labymod.api.event.Subscribe;
 
 public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
 
@@ -56,13 +52,8 @@ public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
   }
 
   @Override
-  public void initialize(AbstractWidget<Widget> widget) {
-    super.initialize(widget);
-  }
-
-  @Override
   public boolean isVisibleInGame() {
-    return spotifyAPI.isConnected() && spotifyAPI.isPlaying();
+    return this.spotifyAPI.isConnected() && this.spotifyAPI.isPlaying();
   }
 
   @Subscribe
@@ -79,20 +70,17 @@ public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
     if (track == null) {
       this.onPlayBackChanged(false);
     } else {
-      this.trackLine.update(track.getName());
-      this.artistLine.update(track.getArtist());
+      this.trackLine.updateAndFlush(track.getName());
+      this.artistLine.updateAndFlush(track.getArtist());
     }
-
-    this.flushAll();
   }
 
   public void onPlayBackChanged(boolean isPlaying) {
     if (!isPlaying) {
-      this.trackLine.update("Not playing");
-      this.artistLine.update("Not playing");
+      this.trackLine.updateAndFlush("Not playing");
+      this.artistLine.updateAndFlush("Not playing");
     } else {
       this.onTrackChanged(this.spotifyAPI.getTrack());
     }
   }
-
 }

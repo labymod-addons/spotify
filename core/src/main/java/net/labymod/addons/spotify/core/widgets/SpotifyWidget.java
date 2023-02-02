@@ -24,139 +24,142 @@ import net.labymod.addons.spotify.core.Textures.SpriteControls;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
+import net.labymod.api.client.gui.hud.hudwidget.HudWidget.Updatable;
 import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.Parent;
-import net.labymod.api.client.gui.screen.widget.SimpleWidget;
-import net.labymod.api.client.gui.screen.widget.Widget;
+import net.labymod.api.client.gui.screen.activity.Link;
 import net.labymod.api.client.gui.screen.widget.widgets.ComponentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.DivWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.VerticalListWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.renderer.IconWidget;
+import org.jetbrains.annotations.Nullable;
 
 @AutoWidget
-public class SpotifyWidget extends SimpleWidget {
+@Link("spotify-widget.lss")
+public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
+
   private static final OpenSpotifyAPI openSpotifyAPI = new OpenSpotifyAPI();
   private final SpotifyHudWidget hudWidget;
   private final SpotifyAPI spotifyAPI;
+  private final boolean editorContext;
+
   private ComponentWidget trackWidget;
   private ComponentWidget artistWidget;
-  private IconWidget iconWidget;
+  private IconWidget coverWidget;
   private ComponentWidget currentTimeWidget;
   private ComponentWidget totalTimeWidget;
-  private FlexibleContentWidget spotifyPlayerWidget;
-  private boolean chatOpen = false;
+  private IconWidget playPauseWidget;
 
-  public SpotifyWidget(SpotifyHudWidget hudWidget) {
+  private boolean chatOpen;
+  private int lastTickPosition = -1;
+
+  public SpotifyWidget(SpotifyHudWidget hudWidget, boolean editorContext) {
     this.hudWidget = hudWidget;
-    this.spotifyAPI = this.hudWidget.getSpotifyAPI();
+    this.editorContext = editorContext;
+    this.spotifyAPI = this.hudWidget.spotifyAPI();
+    this.chatOpen = !Laby.references().chatAccessor().isChatOpen();
   }
 
   @Override
   public void initialize(Parent parent) {
     super.initialize(parent);
-
-    this.iconWidget = new IconWidget(Icon.head("spotify"));
-    this.iconWidget.addId("cover");
-
-    this.trackWidget = ComponentWidget.text("Loading...");
-    this.artistWidget = ComponentWidget.text("Loading...");
-
-    // Player and Progress
-    this.spotifyPlayerWidget = new FlexibleContentWidget();
-    this.spotifyPlayerWidget.addId("spotify-player-widget");
-    {
-      // Icon
-      boolean alignmentRight = this.hudWidget.anchor().isRight();
-      if (!alignmentRight && this.hudWidget.getConfig().showCover().get()) {
-        this.spotifyPlayerWidget.addContent(this.iconWidget);
-      }
-
-      // Player
-      FlexibleContentWidget playerWrapper = new FlexibleContentWidget();
-      playerWrapper.addId("player");
-      {
-        // Control and Text
-        FlexibleContentWidget controlAndTextWrapper = new FlexibleContentWidget();
-        controlAndTextWrapper.addId("control-and-text");
-        {
-          DivWidget controlsWrapper = new DivWidget();
-          // Controls
-          controlsWrapper.addId("controls");
-          {
-            IconWidget playButton = new IconWidget(
-                this.spotifyAPI.isPlaying() ? SpriteControls.PAUSE : SpriteControls.PLAY);
-            playButton.addId("play");
-            playButton.setPressable(() -> {
-              this.spotifyAPI.pressMediaKey(MediaKey.PLAY_PAUSE);
-              this.reInitialize();
-            });
-            controlsWrapper.addChild(playButton);
-
-            IconWidget previousTrack = new IconWidget(SpriteControls.PREVIOUS);
-            previousTrack.addId("previous");
-            previousTrack.setPressable(() -> this.spotifyAPI.pressMediaKey(MediaKey.PREV));
-            controlsWrapper.addChild(previousTrack);
-
-            IconWidget nextTrack = new IconWidget(SpriteControls.NEXT);
-            nextTrack.addId("next");
-            nextTrack.setPressable(() -> this.spotifyAPI.pressMediaKey(MediaKey.NEXT));
-            controlsWrapper.addChild(nextTrack);
-          }
-          if (alignmentRight) {
-            controlAndTextWrapper.addContent(controlsWrapper);
-          }
-
-          // Text
-          VerticalListWidget<Widget> textWrapper = new VerticalListWidget<>();
-          textWrapper.addId("text");
-          textWrapper.addId(alignmentRight ? "right" : "left");
-          {
-            textWrapper.addChild(this.trackWidget);
-            textWrapper.addChild(this.artistWidget);
-          }
-          controlAndTextWrapper.addFlexibleContent(textWrapper);
-
-          if (!alignmentRight) {
-            controlAndTextWrapper.addContent(controlsWrapper);
-          }
-        }
-        playerWrapper.addFlexibleContent(controlAndTextWrapper);
-
-        // Progress
-        FlexibleContentWidget progressWrapper = new FlexibleContentWidget();
-        progressWrapper.addId("progress");
-        {
-          // Current Time
-          this.currentTimeWidget = ComponentWidget.text("0:00");
-          progressWrapper.addContent(this.currentTimeWidget);
-
-          // Progress bar
-          DivWidget barWrapperWidget = new DivWidget();
-          barWrapperWidget.addId("bar-wrapper");
-          {
-            ProgressBarWidget progressBar = new ProgressBarWidget(this.spotifyAPI);
-            progressBar.addId("bar");
-            barWrapperWidget.addChild(progressBar);
-          }
-          progressWrapper.addFlexibleContent(barWrapperWidget);
-
-          // Length
-          this.totalTimeWidget = ComponentWidget.text("0:00");
-          progressWrapper.addContent(this.totalTimeWidget);
-        }
-        playerWrapper.addContent(progressWrapper);
-      }
-      this.spotifyPlayerWidget.addFlexibleContent(playerWrapper);
-
-      // Icon
-      if (alignmentRight && this.hudWidget.getConfig().showCover().get()) {
-        this.spotifyPlayerWidget.addContent(this.iconWidget);
-      }
+    boolean maximize = this.editorContext || !this.hudWidget.getConfig().minimizeIngame().get();
+    if (maximize) {
+      this.addId("maximized");
     }
 
-    this.addChild(this.spotifyPlayerWidget);
+    if (!this.hudWidget.getConfig().showCover().get()) {
+      this.addId("no-cover");
+    }
+
+    boolean leftAligned = this.hudWidget.anchor().isLeft();
+    this.coverWidget = new IconWidget(Icon.head("spotify"));
+    this.coverWidget.addId("cover", leftAligned ? "left" : "right");
+
+    if (!maximize) {
+      ProgressBarWidget minimizedProgressBar = new ProgressBarWidget(this.spotifyAPI);
+      minimizedProgressBar.addId("minimized-bar");
+      this.coverWidget.addChild(minimizedProgressBar);
+    }
+
+    // add cover if the hud widget is left-aligned
+    if (leftAligned) {
+      this.addContent(this.coverWidget);
+    }
+
+    FlexibleContentWidget player = new FlexibleContentWidget();
+    player.addId("player");
+
+    FlexibleContentWidget textAndControl = new FlexibleContentWidget();
+    textAndControl.addId("text-and-control");
+
+    // Text
+    VerticalListWidget<ComponentWidget> text = new VerticalListWidget<>();
+    text.addId("text");
+
+    this.trackWidget = ComponentWidget.empty();
+    text.addChild(this.trackWidget);
+
+    this.artistWidget = ComponentWidget.empty();
+    text.addChild(this.artistWidget);
+
+    // Controls
+    DivWidget controls = new DivWidget();
+    controls.addId("controls");
+
+    this.playPauseWidget = new IconWidget(
+        this.spotifyAPI.isPlaying() ? SpriteControls.PAUSE : SpriteControls.PLAY
+    );
+    this.playPauseWidget.addId("play");
+    this.playPauseWidget.setPressable(() -> this.spotifyAPI.pressMediaKey(MediaKey.PLAY_PAUSE));
+    controls.addChild(this.playPauseWidget);
+
+    IconWidget previousTrack = new IconWidget(SpriteControls.PREVIOUS);
+    previousTrack.addId("previous");
+    previousTrack.setPressable(() -> this.spotifyAPI.pressMediaKey(MediaKey.PREV));
+    controls.addChild(previousTrack);
+
+    IconWidget nextTrack = new IconWidget(SpriteControls.NEXT);
+    nextTrack.addId("next");
+    nextTrack.setPressable(() -> this.spotifyAPI.pressMediaKey(MediaKey.NEXT));
+    controls.addChild(nextTrack);
+
+    // Add text & controls to player based on the alignment
+    if (leftAligned) {
+      textAndControl.addFlexibleContent(text);
+      textAndControl.addContent(controls);
+    } else {
+      textAndControl.addContent(controls);
+      textAndControl.addFlexibleContent(text);
+    }
+
+    player.addFlexibleContent(textAndControl);
+
+    // Add progress bar to player
+    FlexibleContentWidget progress = new FlexibleContentWidget();
+    progress.addId("progress");
+
+    this.currentTimeWidget = ComponentWidget.empty();
+    progress.addContent(this.currentTimeWidget);
+
+    ProgressBarWidget progressBar = new ProgressBarWidget(this.spotifyAPI);
+    progressBar.addId("full-bar");
+    progress.addFlexibleContent(progressBar);
+
+    this.totalTimeWidget = ComponentWidget.empty();
+    progress.addContent(this.totalTimeWidget);
+
+    // Add progress to player and player to this widget
+    player.addContent(progress);
+    this.addContent(player);
+
+    // add cover if the hud widget is right-aligned
+    if (!leftAligned) {
+      this.addContent(this.coverWidget);
+    }
+
     this.updateTrack(this.spotifyAPI.getTrack());
   }
 
@@ -164,21 +167,57 @@ public class SpotifyWidget extends SimpleWidget {
   public void tick() {
     super.tick();
 
-    // ToDo: implement minimized version when chat is closed
-    boolean isChatOpen = Laby.references().chatAccessor().isChatOpen();
-    if (this.chatOpen != isChatOpen) {
-      if (isChatOpen) {
-        this.spotifyPlayerWidget.removeId("minimized");
+    if (!this.editorContext) {
+      if (this.hudWidget.getConfig().minimizeIngame().get()) {
+        boolean isChatOpen = Laby.references().chatAccessor().isChatOpen();
+        if (this.chatOpen != isChatOpen) {
+          if (isChatOpen) {
+            this.addId("maximized");
+          } else {
+            this.removeId("maximized");
+          }
+
+          this.chatOpen = isChatOpen;
+        }
       } else {
-        this.spotifyPlayerWidget.addId("minimized");
+        this.addId("maximized");
       }
-      this.chatOpen = isChatOpen;
     }
 
     if (this.spotifyAPI.hasPosition() && this.currentTimeWidget != null) {
       int position = this.spotifyAPI.getPosition() / 1000;
-      String positionDisplay = String.format("%d:%02d", position / 60, position % 60);
-      this.currentTimeWidget.setComponent(Component.text(positionDisplay));
+      if (this.lastTickPosition < 0 || this.lastTickPosition != position) {
+        String positionDisplay = String.format("%d:%02d", position / 60, position % 60);
+        this.currentTimeWidget.setComponent(Component.text(positionDisplay));
+        this.lastTickPosition = position;
+      }
+    }
+  }
+
+  @Override
+  public void update(@Nullable String reason) {
+    if (reason == null || reason.equals(SpotifyHudWidget.CONNECT_REASON)) {
+      this.reInitialize();
+      return;
+    }
+
+    if (reason.equals(SpotifyHudWidget.PLAYBACK_CHANGE_REASON) && this.playPauseWidget != null) {
+      this.playPauseWidget.icon().set(
+          this.spotifyAPI.isPlaying() ? SpriteControls.PAUSE : SpriteControls.PLAY
+      );
+    }
+
+    if (reason.equals(SpotifyHudWidget.TRACK_CHANGE_REASON)) {
+      this.updateTrack(this.spotifyAPI.getTrack());
+    }
+
+    if (reason.equals(SpotifyHudWidget.COVER_VISIBILITY_REASON)) {
+      boolean showCover = this.hudWidget.getConfig().showCover().get();
+      if (showCover) {
+        this.removeId("no-cover");
+      } else {
+        this.addId("no-cover");
+      }
     }
   }
 
@@ -194,7 +233,7 @@ public class SpotifyWidget extends SimpleWidget {
     String totalTimeDisplay = String.format("%d:%02d", length / 60, length % 60);
     this.totalTimeWidget.setComponent(Component.text(totalTimeDisplay));
 
-    Icon icon = Icon.head("spotify");
+    Icon icon = null;
     try {
       String url = openSpotifyAPI.requestImageUrl(track);
       icon = Icon.url(url);
@@ -202,6 +241,6 @@ public class SpotifyWidget extends SimpleWidget {
       e.printStackTrace();
     }
 
-    this.iconWidget.icon().set(icon);
+    this.coverWidget.icon().set(icon == null ? Icon.head("spotify") : icon);
   }
 }

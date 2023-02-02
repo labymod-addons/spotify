@@ -25,18 +25,20 @@ import net.labymod.addons.spotify.core.widgets.SpotifyWidget;
 import net.labymod.api.client.gui.hud.hudwidget.HudWidgetConfig;
 import net.labymod.api.client.gui.hud.hudwidget.widget.WidgetHudWidget;
 import net.labymod.api.client.gui.icon.Icon;
-import net.labymod.api.client.gui.screen.activity.Link;
 import net.labymod.api.client.gui.screen.widget.AbstractWidget;
 import net.labymod.api.client.gui.screen.widget.Widget;
+import net.labymod.api.client.gui.screen.widget.widgets.hud.HudWidgetWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.SwitchWidget.SwitchSetting;
 import net.labymod.api.configuration.loader.property.ConfigProperty;
-import net.labymod.api.event.Priority;
 import net.labymod.api.event.Subscribe;
-import net.labymod.api.event.client.gui.screen.ScreenOpenEvent;
 import net.labymod.api.util.ThreadSafe;
 
-@Link("spotify-widget.lss")
 public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
+
+  public static final String TRACK_CHANGE_REASON = "track_change";
+  public static final String PLAYBACK_CHANGE_REASON = "playback_change";
+  public static final String COVER_VISIBILITY_REASON = "cover_visibility";
+  public static final String CONNECT_REASON = "connect";
 
   private final SpotifyAPI spotifyAPI;
   private final Icon hudWidgetIcon;
@@ -55,7 +57,8 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
     this.setIcon(this.hudWidgetIcon);
 
     config.showCover.addChangeListener(
-        (property, oldValue, newValue) -> ThreadSafe.executeOnRenderThread(this::requestUpdate)
+        (property, oldValue, newValue) -> ThreadSafe.executeOnRenderThread(
+            () -> this.requestUpdate(COVER_VISIBILITY_REASON))
     );
   }
 
@@ -63,7 +66,12 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   public void initialize(AbstractWidget<Widget> widget) {
     super.initialize(widget);
 
-    SpotifyWidget spotifyWidget = new SpotifyWidget(this);
+    boolean editorContext = false;
+    if (widget instanceof HudWidgetWidget) {
+      editorContext = ((HudWidgetWidget) widget).accessor().isEditor();
+    }
+
+    SpotifyWidget spotifyWidget = new SpotifyWidget(this, editorContext);
     widget.addChild(spotifyWidget);
     widget.addId("spotify");
   }
@@ -74,30 +82,21 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   }
 
   @Subscribe
-  public void onScreenOpen(ScreenOpenEvent event) {
-    if (event.getScreen() == null) {
-      return;
-    }
-    System.out.println(event.getScreen());
-    ThreadSafe.executeOnRenderThread(this::requestUpdate);
-  }
-
-  @Subscribe
   public void onSpotifyConnectEvent(SpotifyConnectEvent event) {
-    ThreadSafe.executeOnRenderThread(this::requestUpdate);
+    ThreadSafe.executeOnRenderThread(() -> this.requestUpdate(CONNECT_REASON));
   }
 
   @Subscribe
   public void onSpotifyTrackChangedEvent(SpotifyTrackChangedEvent event) {
-    ThreadSafe.executeOnRenderThread(this::requestUpdate);
+    ThreadSafe.executeOnRenderThread(() -> this.requestUpdate(TRACK_CHANGE_REASON));
   }
 
   @Subscribe
   public void onSpotifyPlayBackChangedEvent(SpotifyPlayBackChangedEvent event) {
-    ThreadSafe.executeOnRenderThread(this::requestUpdate);
+    ThreadSafe.executeOnRenderThread(() -> this.requestUpdate(PLAYBACK_CHANGE_REASON));
   }
 
-  public SpotifyAPI getSpotifyAPI() {
+  public SpotifyAPI spotifyAPI() {
     return this.spotifyAPI;
   }
 
@@ -106,10 +105,15 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
     @SwitchSetting
     private final ConfigProperty<Boolean> showCover = ConfigProperty.create(true);
 
+    @SwitchSetting
+    private final ConfigProperty<Boolean> minimizeIngame = ConfigProperty.create(true);
 
     public ConfigProperty<Boolean> showCover() {
       return this.showCover;
     }
 
+    public ConfigProperty<Boolean> minimizeIngame() {
+      return this.minimizeIngame;
+    }
   }
 }
