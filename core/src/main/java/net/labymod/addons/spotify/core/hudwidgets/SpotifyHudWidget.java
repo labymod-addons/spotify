@@ -17,8 +17,9 @@
 package net.labymod.addons.spotify.core.hudwidgets;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
+import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
-import net.labymod.addons.spotify.core.events.SpotifyPlayBackChangedEvent;
+import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget.SpotifyHudWidgetConfig;
 import net.labymod.addons.spotify.core.widgets.SpotifyWidget;
@@ -40,13 +41,16 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   public static final String COVER_VISIBILITY_REASON = "cover_visibility";
   public static final String CONNECT_REASON = "connect";
 
+  private final OpenSpotifyAPI openSpotifyAPI;
   private final SpotifyAPI spotifyAPI;
   private final Icon hudWidgetIcon;
 
-  public SpotifyHudWidget(String id, Icon icon, SpotifyAPI spotifyAPI) {
+  public SpotifyHudWidget(String id, Icon icon, OpenSpotifyAPI openSpotifyAPI,
+      SpotifyAPI spotifyAPI) {
     super(id, SpotifyHudWidgetConfig.class);
 
     this.hudWidgetIcon = icon;
+    this.openSpotifyAPI = openSpotifyAPI;
     this.spotifyAPI = spotifyAPI;
   }
 
@@ -71,7 +75,7 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
       editorContext = ((HudWidgetWidget) widget).accessor().isEditor();
     }
 
-    SpotifyWidget spotifyWidget = new SpotifyWidget(this, editorContext);
+    SpotifyWidget spotifyWidget = new SpotifyWidget(this.openSpotifyAPI, this, editorContext);
     widget.addChild(spotifyWidget);
     widget.addId("spotify");
   }
@@ -92,7 +96,7 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   }
 
   @Subscribe
-  public void onSpotifyPlayBackChangedEvent(SpotifyPlayBackChangedEvent event) {
+  public void onSpotifyPlayBackChangedEvent(SpotifyPlaybackChangedEvent event) {
     ThreadSafe.executeOnRenderThread(() -> this.requestUpdate(PLAYBACK_CHANGE_REASON));
   }
 

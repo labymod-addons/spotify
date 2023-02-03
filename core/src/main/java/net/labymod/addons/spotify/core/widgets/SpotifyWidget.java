@@ -20,6 +20,7 @@ import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.model.MediaKey;
 import de.labystudio.spotifyapi.model.Track;
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
+import de.labystudio.spotifyapi.open.model.track.Image;
 import net.labymod.addons.spotify.core.Textures.SpriteControls;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
 import net.labymod.api.Laby;
@@ -40,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 @Link("spotify-widget.lss")
 public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
 
-  private static final OpenSpotifyAPI openSpotifyAPI = new OpenSpotifyAPI();
+  private final OpenSpotifyAPI openSpotifyAPI;
   private final SpotifyHudWidget hudWidget;
   private final SpotifyAPI spotifyAPI;
   private final boolean editorContext;
@@ -55,7 +56,12 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   private boolean chatOpen;
   private int lastTickPosition = -1;
 
-  public SpotifyWidget(SpotifyHudWidget hudWidget, boolean editorContext) {
+  public SpotifyWidget(
+      OpenSpotifyAPI openSpotifyAPI,
+      SpotifyHudWidget hudWidget,
+      boolean editorContext
+  ) {
+    this.openSpotifyAPI = openSpotifyAPI;
     this.hudWidget = hudWidget;
     this.editorContext = editorContext;
     this.spotifyAPI = this.hudWidget.spotifyAPI();
@@ -75,7 +81,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     }
 
     boolean leftAligned = this.hudWidget.anchor().isLeft();
-    this.coverWidget = new IconWidget(Icon.head("spotify"));
+    this.coverWidget = new IconWidget(this.hudWidget.getIcon());
     this.coverWidget.addId("cover", leftAligned ? "left" : "right");
 
     if (!maximize) {
@@ -233,14 +239,31 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     String totalTimeDisplay = String.format("%d:%02d", length / 60, length % 60);
     this.totalTimeWidget.setComponent(Component.text(totalTimeDisplay));
 
-    Icon icon = null;
-    try {
-      String url = openSpotifyAPI.requestImageUrl(track);
-      icon = Icon.url(url);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    this.openSpotifyAPI.requestOpenTrackAsync(track, openTrack -> {
+      if (openTrack == null || openTrack.album == null || openTrack.album.images == null
+          || openTrack.album.images.isEmpty()) {
+        this.labyAPI.minecraft().executeOnRenderThread(
+            () -> this.coverWidget.icon().set(this.hudWidget.getIcon())
+        );
 
-    this.coverWidget.icon().set(icon == null ? Icon.head("spotify") : icon);
+        return;
+      }
+
+      Image smallestImage = null;
+      for (Image image : openTrack.album.images) {
+        if (smallestImage == null || image.width < smallestImage.width) {
+          smallestImage = image;
+        }
+      }
+
+      Image finalSmallestImage = smallestImage;
+      this.labyAPI.minecraft().executeOnRenderThread(
+          () -> this.coverWidget.icon().set(Icon.url(
+                  finalSmallestImage.url,
+                  this.coverWidget.icon().get().resourceLocation()
+              )
+          )
+      );
+    });
   }
 }

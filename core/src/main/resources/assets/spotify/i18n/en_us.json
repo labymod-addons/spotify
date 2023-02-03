@@ -20,6 +20,27 @@
       "name": "Spotify",
       "enabled": {
         "name": "Enabled"
+      },
+      "displayTracks": {
+        "name": "Display Shared Songs",
+        "description": "Display the songs that are shared between you and other players using the Spotify addon"
+      },
+      "shareTracks": {
+        "name": "Share Current Song",
+        "description": "Share the song you are currently listening to with other players using the Spotify addon"
+      },
+      "displayTrackCover": {
+        "name": "Display Song Cover",
+        "description": "Display the cover of the current song"
+      },
+      "displayExplicitTracks": {
+        "name": "Display Explicit Songs",
+        "description": "Display songs marked as explicit"
+      },
+      "header": {
+        "sharing": {
+          "name": "Song Sharing (Experimental)"
+        }
       }
     }
   }

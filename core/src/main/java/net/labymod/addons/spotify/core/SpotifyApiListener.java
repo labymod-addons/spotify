@@ -19,7 +19,7 @@ package net.labymod.addons.spotify.core;
 import de.labystudio.spotifyapi.SpotifyListener;
 import de.labystudio.spotifyapi.model.Track;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
-import net.labymod.addons.spotify.core.events.SpotifyPlayBackChangedEvent;
+import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
 import net.labymod.api.Laby;
 import net.labymod.api.LabyAPI;
@@ -49,7 +49,7 @@ public class SpotifyApiListener implements SpotifyListener {
 
   @Override
   public void onPlayBackChanged(boolean isPlaying) {
-    this.labyAPI.eventBus().fire(new SpotifyPlayBackChangedEvent(isPlaying));
+    this.labyAPI.eventBus().fire(new SpotifyPlaybackChangedEvent(isPlaying));
   }
 
   @Override

@@ -18,10 +18,19 @@ package net.labymod.addons.spotify.core;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.SpotifyAPIFactory;
+import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyTextHudWidget;
+import net.labymod.addons.spotify.core.listener.BroadcastPayloadListener;
+import net.labymod.addons.spotify.core.listener.PlayerInfoRemoveListener;
+import net.labymod.addons.spotify.core.listener.SpotifyPlaybackChangedListener;
+import net.labymod.addons.spotify.core.listener.SpotifyTrackChangedListener;
+import net.labymod.addons.spotify.core.misc.BroadcastController;
+import net.labymod.addons.spotify.core.nametag.SpotifyListeningTag;
 import net.labymod.api.addon.LabyAddon;
+import net.labymod.api.client.entity.player.tag.PositionType;
 import net.labymod.api.client.gui.hud.HudWidgetRegistry;
+import net.labymod.api.client.gui.hud.hudwidget.HudWidget;
 import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.models.addon.annotation.AddonMain;
@@ -33,6 +42,16 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
           ResourceLocation.create("spotify", "themes/vanilla/textures/settings/hud/spotify32.png"))
       .resolution(64, 64);
 
+  public SpotifyAddon() {
+    //todo remove
+    try {
+      if (this instanceof HudWidget.Updatable) {
+      }
+    } catch (Exception exception) {
+      throw new RuntimeException("Failed to enable SpotifyAddon", exception);
+    }
+  }
+
   @Override
   protected void enable() {
     this.registerSettingCategory();
@@ -43,9 +62,26 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     spotifyAPI.registerListener(spotifyApiListener);
     spotifyAPI.initializeAsync();
 
+    OpenSpotifyAPI openSpotifyAPI = new OpenSpotifyAPI();
     HudWidgetRegistry registry = this.labyAPI().hudWidgetRegistry();
     registry.register(new SpotifyTextHudWidget("spotify_track", this.hudIcon, spotifyAPI));
-    registry.register(new SpotifyHudWidget("spotify", this.hudIcon, spotifyAPI));
+    registry.register(new SpotifyHudWidget("spotify", this.hudIcon, openSpotifyAPI, spotifyAPI));
+
+    BroadcastController broadcastController = new BroadcastController(openSpotifyAPI, this);
+    this.registerListener(new BroadcastPayloadListener(this, broadcastController));
+    this.registerListener(new SpotifyTrackChangedListener(this, broadcastController));
+    this.registerListener(new PlayerInfoRemoveListener(broadcastController));
+    this.registerListener(new SpotifyPlaybackChangedListener(
+        this,
+        spotifyAPI,
+        broadcastController
+    ));
+
+    this.labyAPI().tagRegistry().register(
+        "spotify_listening",
+        PositionType.BELOW_NAME,
+        new SpotifyListeningTag(this.configuration(), broadcastController)
+    );
   }
 
   @Override

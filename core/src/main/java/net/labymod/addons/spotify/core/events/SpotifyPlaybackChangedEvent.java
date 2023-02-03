@@ -18,11 +18,11 @@ package net.labymod.addons.spotify.core.events;
 
 import net.labymod.api.event.Event;
 
-public class SpotifyPlayBackChangedEvent implements Event {
+public class SpotifyPlaybackChangedEvent implements Event {
 
   private final boolean isPlaying;
 
-  public SpotifyPlayBackChangedEvent(boolean isPlaying) {
+  public SpotifyPlaybackChangedEvent(boolean isPlaying) {
     this.isPlaying = isPlaying;
   }
 
