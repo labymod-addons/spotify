@@ -133,6 +133,22 @@ Spotify {
     }
   }
 
+  &.right {
+    .text {
+      Component {
+        alignment-x: right;
+      }
+    }
+  }
+
+  &.left {
+    .text {
+      Component {
+        alignment-x: left;
+      }
+    }
+  }
+
   ProgressBar {
     background-color: rgb(68, 68, 68);
     foreground-color: rgb(44, 214, 105);

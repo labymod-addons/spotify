@@ -81,8 +81,10 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     }
 
     boolean leftAligned = this.hudWidget.anchor().isLeft();
+    this.addId(leftAligned ? "left" : "right");
+
     this.coverWidget = new IconWidget(this.hudWidget.getIcon());
-    this.coverWidget.addId("cover", leftAligned ? "left" : "right");
+    this.coverWidget.addId("cover");
 
     if (!maximize) {
       ProgressBarWidget minimizedProgressBar = new ProgressBarWidget(this.spotifyAPI);
