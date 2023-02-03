@@ -21,6 +21,7 @@ import de.labystudio.spotifyapi.SpotifyAPIFactory;
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyTextHudWidget;
+import net.labymod.addons.spotify.core.interaction.SpotifyTrackBulletPoint;
 import net.labymod.addons.spotify.core.listener.BroadcastPayloadListener;
 import net.labymod.addons.spotify.core.listener.PlayerInfoRemoveListener;
 import net.labymod.addons.spotify.core.listener.SpotifyPlaybackChangedListener;
@@ -74,6 +75,11 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     this.registerListener(new SpotifyPlaybackChangedListener(
         this,
         spotifyAPI,
+        broadcastController
+    ));
+
+    this.labyAPI().interactionMenuRegistry().register(new SpotifyTrackBulletPoint(
+        this,
         broadcastController
     ));
 
