@@ -190,9 +190,14 @@ public class BroadcastController {
 
         String artist = openTrack.artists.get(0).name;
         if (artist.length() > 32) {
-          name = name.substring(0, 29) + "...";
+          artist = artist.substring(0, 29) + "...";
         }
-        this.component = Component.text(name.trim() + "\n" + artist.trim());
+
+        String finalName = name.trim();
+        String finalArtist = artist.trim();
+        Laby.labyAPI().minecraft().executeOnRenderThread(
+            () -> this.component = Component.text(finalName + "\n" + finalArtist)
+        );
 
         if (!BroadcastController.this.spotifyAddon.configuration().displayTrackCover().get()
             || openTrack.album.images == null || openTrack.album.images.isEmpty()) {
@@ -209,6 +214,10 @@ public class BroadcastController {
 
         this.icon = Icon.url(smallestImage.url);
       });
+    }
+
+    public String getTrackId() {
+      return this.trackId;
     }
   }
 }
