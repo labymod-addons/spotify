@@ -121,17 +121,17 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
         this.spotifyAPI.isPlaying() ? SpriteControls.PAUSE : SpriteControls.PLAY
     );
     this.playPauseWidget.addId("play");
-    this.playPauseWidget.setPressable(() -> this.spotifyAPI.pressMediaKey(MediaKey.PLAY_PAUSE));
+    this.playPauseWidget.setPressable(() -> this.pressMediaKey(MediaKey.PLAY_PAUSE));
     controls.addChild(this.playPauseWidget);
 
     IconWidget previousTrack = new IconWidget(SpriteControls.PREVIOUS);
     previousTrack.addId("previous");
-    previousTrack.setPressable(() -> this.spotifyAPI.pressMediaKey(MediaKey.PREV));
+    previousTrack.setPressable(() -> this.pressMediaKey(MediaKey.PREV));
     controls.addChild(previousTrack);
 
     IconWidget nextTrack = new IconWidget(SpriteControls.NEXT);
     nextTrack.addId("next");
-    nextTrack.setPressable(() -> this.spotifyAPI.pressMediaKey(MediaKey.NEXT));
+    nextTrack.setPressable(() -> this.pressMediaKey(MediaKey.NEXT));
     controls.addChild(nextTrack);
 
     // Add text & controls to player based on the alignment
@@ -267,5 +267,13 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
           )
       );
     });
+  }
+
+  private void pressMediaKey(MediaKey mediaKey) {
+    if (!this.spotifyAPI.isConnected()) {
+      return;
+    }
+
+    this.spotifyAPI.pressMediaKey(mediaKey);
   }
 }
