@@ -27,6 +27,7 @@ import net.labymod.addons.spotify.core.listener.PlayerInfoRemoveListener;
 import net.labymod.addons.spotify.core.listener.SpotifyPlaybackChangedListener;
 import net.labymod.addons.spotify.core.listener.SpotifyTrackChangedListener;
 import net.labymod.addons.spotify.core.misc.BroadcastController;
+import net.labymod.addons.spotify.core.misc.ReconnectDelay;
 import net.labymod.addons.spotify.core.nametag.SpotifyListeningTag;
 import net.labymod.api.addon.LabyAddon;
 import net.labymod.api.client.entity.player.tag.PositionType;
@@ -43,6 +44,9 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
           ResourceLocation.create("spotify", "themes/vanilla/textures/settings/hud/spotify32.png"))
       .resolution(64, 64);
 
+  private static SpotifyAddon instance;
+  private final SpotifyAPI spotifyAPI;
+
   public SpotifyAddon() {
     //todo remove
     try {
@@ -51,22 +55,28 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     } catch (Exception exception) {
       throw new RuntimeException("Failed to enable SpotifyAddon", exception);
     }
+
+    SpotifyAddon.instance = this;
+    this.spotifyAPI = SpotifyAPIFactory.create();
+  }
+
+  public static SpotifyAddon get() {
+    return SpotifyAddon.instance;
   }
 
   @Override
   protected void enable() {
     this.registerSettingCategory();
 
-    SpotifyAPI spotifyAPI = SpotifyAPIFactory.create();
-    SpotifyApiListener spotifyApiListener = new SpotifyApiListener();
+    SpotifyApiListener spotifyApiListener = new SpotifyApiListener(this.spotifyAPI, this);
 
-    spotifyAPI.registerListener(spotifyApiListener);
-    spotifyAPI.initializeAsync();
+    this.spotifyAPI.registerListener(spotifyApiListener);
+    this.initializeSpotifyAPI();
 
     OpenSpotifyAPI openSpotifyAPI = new OpenSpotifyAPI();
     HudWidgetRegistry registry = this.labyAPI().hudWidgetRegistry();
-    registry.register(new SpotifyTextHudWidget("spotify_track", this.hudIcon, spotifyAPI));
-    registry.register(new SpotifyHudWidget("spotify", this.hudIcon, openSpotifyAPI, spotifyAPI));
+    registry.register(new SpotifyTextHudWidget("spotify_track", this.hudIcon, this.spotifyAPI));
+    registry.register(new SpotifyHudWidget("spotify", this.hudIcon, openSpotifyAPI, this.spotifyAPI));
 
     BroadcastController broadcastController = new BroadcastController(openSpotifyAPI, this);
     this.registerListener(new BroadcastPayloadListener(this, broadcastController));
@@ -74,7 +84,7 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     this.registerListener(new PlayerInfoRemoveListener(broadcastController));
     this.registerListener(new SpotifyPlaybackChangedListener(
         this,
-        spotifyAPI,
+        this.spotifyAPI,
         broadcastController
     ));
 
@@ -93,5 +103,36 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
   @Override
   protected Class<SpotifyConfiguration> configurationClass() {
     return SpotifyConfiguration.class;
+  }
+
+  public void initializeSpotifyAPI() {
+    this.initializeSpotifyAPI(ReconnectDelay.DEFAULT, true);
+  }
+
+  public void initializeSpotifyAPI(ReconnectDelay reconnectDelay, boolean ignoreInitialized) {
+    if (this.spotifyAPI.isInitialized()) {
+      if (!ignoreInitialized) {
+        return;
+      }
+
+      this.spotifyAPI.stop();
+    }
+
+    if (!this.configuration().enabled().get()) {
+      return;
+    }
+
+    this.spotifyAPI.initializeAsync(
+        new de.labystudio.spotifyapi.config.SpotifyConfiguration.Builder()
+            .autoReconnect(false)
+            .exceptionReconnectDelay(reconnectDelay.getDelay())
+            .build()
+    );
+  }
+
+  public void disconnect() {
+    if (this.spotifyAPI.isInitialized()) {
+      this.spotifyAPI.stop();
+    }
   }
 }

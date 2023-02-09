@@ -16,11 +16,11 @@
 
 package net.labymod.addons.spotify.core;
 
-import net.labymod.api.client.gui.icon.Icon;
-import net.labymod.api.client.resources.texture.ThemeTextureLocation;
-
 import static net.labymod.api.client.gui.icon.Icon.sprite;
 import static net.labymod.api.client.resources.texture.ThemeTextureLocation.of;
+
+import net.labymod.api.client.gui.icon.Icon;
+import net.labymod.api.client.resources.texture.ThemeTextureLocation;
 
 public class Textures {
 

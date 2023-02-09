@@ -41,6 +41,8 @@ import org.jetbrains.annotations.Nullable;
 @Link("spotify-widget.lss")
 public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
 
+  private static final String PROGRESS_VISIBLE_KEY = "--progress-visible";
+
   private final OpenSpotifyAPI openSpotifyAPI;
   private final SpotifyHudWidget hudWidget;
   private final SpotifyAPI spotifyAPI;
@@ -66,6 +68,11 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     this.editorContext = editorContext;
     this.spotifyAPI = this.hudWidget.spotifyAPI();
     this.chatOpen = !Laby.references().chatAccessor().isChatOpen();
+
+    this.setVariable(
+        PROGRESS_VISIBLE_KEY,
+        String.valueOf(this.spotifyAPI.hasTrack() && this.spotifyAPI.hasPosition())
+    );
   }
 
   @Override
@@ -121,7 +128,13 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
         this.spotifyAPI.isPlaying() ? SpriteControls.PAUSE : SpriteControls.PLAY
     );
     this.playPauseWidget.addId("play");
-    this.playPauseWidget.setPressable(() -> this.pressMediaKey(MediaKey.PLAY_PAUSE));
+    this.playPauseWidget.setPressable(() -> {
+      this.playPauseWidget.icon().set(
+          this.spotifyAPI.isPlaying() ? SpriteControls.PLAY : SpriteControls.PAUSE
+      );
+
+      this.pressMediaKey(MediaKey.PLAY_PAUSE);
+    });
     controls.addChild(this.playPauseWidget);
 
     IconWidget previousTrack = new IconWidget(SpriteControls.PREVIOUS);
@@ -174,6 +187,10 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   @Override
   public void tick() {
     super.tick();
+    this.setVariable(
+        PROGRESS_VISIBLE_KEY,
+        String.valueOf(this.spotifyAPI.hasTrack() && this.spotifyAPI.hasPosition())
+    );
 
     if (!this.editorContext) {
       if (this.hudWidget.getConfig().minimizeIngame().get()) {

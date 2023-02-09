@@ -10,7 +10,7 @@ Spotify {
   background-color: rgba(0, 0, 0, 0);
 
   .minimized-bar {
-    visible: true;
+    visible: var(--progress-visible);
     bottom: 0;
     left: 0;
     right: 0;
@@ -109,7 +109,7 @@ Spotify {
 
     .progress {
       margin-right: 1;
-      visible: true;
+      visible: var(--progress-visible);
 
       orientation: horizontal;
       height: 8;

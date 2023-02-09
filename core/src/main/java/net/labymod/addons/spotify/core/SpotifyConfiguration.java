@@ -27,7 +27,16 @@ import net.labymod.api.configuration.settings.annotation.SettingSection;
 public class SpotifyConfiguration extends AddonConfig {
 
   @SwitchSetting
-  private final ConfigProperty<Boolean> enabled = new ConfigProperty<>(true);
+  private final ConfigProperty<Boolean> enabled = new ConfigProperty<>(true).addChangeListener(
+      (property, prevValue, newValue) -> {
+        if (newValue) {
+          System.out.println("manual connect");
+          SpotifyAddon.get().initializeSpotifyAPI();
+        } else {
+          System.out.println("manual disconnect");
+          SpotifyAddon.get().disconnect();
+        }
+      });
 
   @SettingSection("sharing")
   @SwitchSetting

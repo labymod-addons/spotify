@@ -16,29 +16,37 @@
 
 package net.labymod.addons.spotify.core;
 
+import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.SpotifyListener;
+import de.labystudio.spotifyapi.config.SpotifyConfiguration;
 import de.labystudio.spotifyapi.model.Track;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
-import net.labymod.api.Laby;
+import net.labymod.addons.spotify.core.misc.ReconnectDelay;
 import net.labymod.api.LabyAPI;
 
 public class SpotifyApiListener implements SpotifyListener {
 
+  private final SpotifyAPI spotifyAPI;
+  private final SpotifyAddon spotifyAddon;
   private final LabyAPI labyAPI;
 
-  public SpotifyApiListener() {
-    this.labyAPI = Laby.labyAPI();
+  public SpotifyApiListener(SpotifyAPI spotifyAPI, SpotifyAddon spotifyAddon) {
+    this.spotifyAPI = spotifyAPI;
+    this.spotifyAddon = spotifyAddon;
+    this.labyAPI = spotifyAddon.labyAPI();
   }
 
   @Override
   public void onConnect() {
+    System.out.println("Connected to Spotify");
     this.labyAPI.eventBus().fire(new SpotifyConnectEvent());
   }
 
   @Override
   public void onTrackChanged(Track track) {
+    System.out.println("Track changed: " + track.getName());
     this.labyAPI.eventBus().fire(new SpotifyTrackChangedEvent(track));
   }
 
@@ -59,6 +67,11 @@ public class SpotifyApiListener implements SpotifyListener {
 
   @Override
   public void onDisconnect(Exception exception) {
-    // not needed
+    SpotifyConfiguration configuration = this.spotifyAPI.getConfiguration();
+    ReconnectDelay next = ReconnectDelay.of(configuration.getExceptionReconnectDelay()).next();
+
+    this.spotifyAddon.initializeSpotifyAPI(next, true);
+
+    System.out.println("Disconnected from Spotify");
   }
 }

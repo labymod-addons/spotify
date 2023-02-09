@@ -42,11 +42,7 @@ public class ProgressBarWidget extends SimpleWidget {
   @Override
   public void renderWidget(Stack stack, MutableMouse mouse, float partialTicks) {
     super.renderWidget(stack, mouse, partialTicks);
-
-    float progress = this.spotifyAPI.hasTrack() && this.spotifyAPI.hasPosition()
-        ? 1.0F / this.spotifyAPI.getTrack().getLength() * this.spotifyAPI.getPosition()
-        : 0;
-
+    float progress = 1.0F / this.spotifyAPI.getTrack().getLength() * this.spotifyAPI.getPosition();
     Bounds bounds = this.bounds();
     RECTANGLE_RENDERER
         .pos(bounds.getLeft(), bounds.getTop())
