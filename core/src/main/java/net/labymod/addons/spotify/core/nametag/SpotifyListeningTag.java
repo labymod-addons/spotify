@@ -20,6 +20,7 @@ import net.labymod.addons.spotify.core.SpotifyConfiguration;
 import net.labymod.addons.spotify.core.misc.BroadcastController;
 import net.labymod.addons.spotify.core.misc.BroadcastController.ReceivedBroadcast;
 import net.labymod.api.Laby;
+import net.labymod.api.client.component.Component;
 import net.labymod.api.client.entity.player.Player;
 import net.labymod.api.client.entity.player.tag.tags.NameTag;
 import net.labymod.api.client.gui.HorizontalAlignment;
@@ -46,7 +47,8 @@ public class SpotifyListeningTag extends NameTag {
       return null;
     }
 
-    if (!this.configuration.enabled().get() || !this.configuration.displayTracks().get()) {
+    SpotifyConfiguration configuration = this.configuration;
+    if (!configuration.enabled().get() || !configuration.displayTracks().get()) {
       return null;
     }
 
@@ -56,18 +58,25 @@ public class SpotifyListeningTag extends NameTag {
     }
 
     if (receivedBroadcast.track != null && receivedBroadcast.track.explicit
-        && !this.configuration.displayExplicitTracks().get()) {
+        && !configuration.displayExplicitTracks().get()) {
       return null;
     }
 
     HorizontalAlignment alignment =
         receivedBroadcast.icon == null ? HorizontalAlignment.CENTER : HorizontalAlignment.LEFT;
-    if (!this.configuration.displayTrackCover().get()) {
+    if (!configuration.displayTrackCover().get()) {
       alignment = HorizontalAlignment.CENTER;
     }
 
     this.receivedBroadcast = receivedBroadcast;
-    return RenderableComponent.of(receivedBroadcast.component, alignment);
+
+    //this shouldn't be happening as BroadcastController#get checks for this. But as all track information is being loaded async, it can still happen.
+    Component component = receivedBroadcast.component;
+    if (component == null) {
+      return null;
+    }
+
+    return RenderableComponent.of(component, alignment);
   }
 
   @Override

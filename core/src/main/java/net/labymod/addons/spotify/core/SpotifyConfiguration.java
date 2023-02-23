@@ -29,12 +29,15 @@ public class SpotifyConfiguration extends AddonConfig {
   @SwitchSetting
   private final ConfigProperty<Boolean> enabled = new ConfigProperty<>(true).addChangeListener(
       (property, prevValue, newValue) -> {
+        SpotifyAddon spotifyAddon = SpotifyAddon.get();
+        if (spotifyAddon == null) {
+          return;
+        }
+
         if (newValue) {
-          System.out.println("manual connect");
-          SpotifyAddon.get().initializeSpotifyAPI();
+          spotifyAddon.initializeSpotifyAPI();
         } else {
-          System.out.println("manual disconnect");
-          SpotifyAddon.get().disconnect();
+          spotifyAddon.disconnect();
         }
       });
 

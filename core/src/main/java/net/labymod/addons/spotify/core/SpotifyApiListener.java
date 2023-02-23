@@ -40,13 +40,11 @@ public class SpotifyApiListener implements SpotifyListener {
 
   @Override
   public void onConnect() {
-    System.out.println("Connected to Spotify");
     this.labyAPI.eventBus().fire(new SpotifyConnectEvent());
   }
 
   @Override
   public void onTrackChanged(Track track) {
-    System.out.println("Track changed: " + track.getName());
     this.labyAPI.eventBus().fire(new SpotifyTrackChangedEvent(track));
   }
 
@@ -71,7 +69,5 @@ public class SpotifyApiListener implements SpotifyListener {
     ReconnectDelay next = ReconnectDelay.of(configuration.getExceptionReconnectDelay()).next();
 
     this.spotifyAddon.initializeSpotifyAPI(next, true);
-
-    System.out.println("Disconnected from Spotify");
   }
 }

@@ -87,17 +87,35 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
 
   @Subscribe
   public void onSpotifyConnectEvent(SpotifyConnectEvent event) {
-    ThreadSafe.executeOnRenderThread(() -> this.requestUpdate(CONNECT_REASON));
+    ThreadSafe.executeOnRenderThread(() -> {
+      if (!this.isEnabled()) {
+        return;
+      }
+
+      this.requestUpdate(CONNECT_REASON);
+    });
   }
 
   @Subscribe
   public void onSpotifyTrackChangedEvent(SpotifyTrackChangedEvent event) {
-    ThreadSafe.executeOnRenderThread(() -> this.requestUpdate(TRACK_CHANGE_REASON));
+    ThreadSafe.executeOnRenderThread(() -> {
+      if (!this.isEnabled()) {
+        return;
+      }
+
+      this.requestUpdate(TRACK_CHANGE_REASON);
+    });
   }
 
   @Subscribe
   public void onSpotifyPlayBackChangedEvent(SpotifyPlaybackChangedEvent event) {
-    ThreadSafe.executeOnRenderThread(() -> this.requestUpdate(PLAYBACK_CHANGE_REASON));
+    ThreadSafe.executeOnRenderThread(() -> {
+      if (!this.isEnabled()) {
+        return;
+      }
+
+      this.requestUpdate(PLAYBACK_CHANGE_REASON);
+    });
   }
 
   public SpotifyAPI spotifyAPI() {

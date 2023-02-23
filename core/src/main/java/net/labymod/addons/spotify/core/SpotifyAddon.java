@@ -32,7 +32,6 @@ import net.labymod.addons.spotify.core.nametag.SpotifyListeningTag;
 import net.labymod.api.addon.LabyAddon;
 import net.labymod.api.client.entity.player.tag.PositionType;
 import net.labymod.api.client.gui.hud.HudWidgetRegistry;
-import net.labymod.api.client.gui.hud.hudwidget.HudWidget;
 import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.models.addon.annotation.AddonMain;
@@ -40,22 +39,15 @@ import net.labymod.api.models.addon.annotation.AddonMain;
 @AddonMain
 public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
 
-  private final Icon hudIcon = Icon.texture(
-          ResourceLocation.create("spotify", "themes/vanilla/textures/settings/hud/spotify32.png"))
-      .resolution(64, 64);
+  private final Icon hudIcon = Icon.texture(ResourceLocation.create(
+      "spotify",
+      "themes/vanilla/textures/settings/hud/spotify32.png"
+  )).resolution(64, 64);
 
   private static SpotifyAddon instance;
   private final SpotifyAPI spotifyAPI;
 
   public SpotifyAddon() {
-    //todo remove
-    try {
-      if (this instanceof HudWidget.Updatable) {
-      }
-    } catch (Exception exception) {
-      throw new RuntimeException("Failed to enable SpotifyAddon", exception);
-    }
-
     SpotifyAddon.instance = this;
     this.spotifyAPI = SpotifyAPIFactory.create();
   }
@@ -74,10 +66,11 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     this.initializeSpotifyAPI();
 
     OpenSpotifyAPI openSpotifyAPI = new OpenSpotifyAPI();
-    
+
     HudWidgetRegistry registry = this.labyAPI().hudWidgetRegistry();
     registry.register(new SpotifyTextHudWidget("spotify_track", this.hudIcon, this.spotifyAPI));
-    registry.register(new SpotifyHudWidget("spotify", this.hudIcon, openSpotifyAPI, this.spotifyAPI));
+    registry.register(
+        new SpotifyHudWidget("spotify", this.hudIcon, openSpotifyAPI, this.spotifyAPI));
 
     BroadcastController broadcastController = new BroadcastController(openSpotifyAPI, this);
     this.registerListener(new BroadcastPayloadListener(this, broadcastController));
