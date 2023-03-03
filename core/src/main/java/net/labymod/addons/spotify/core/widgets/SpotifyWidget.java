@@ -78,6 +78,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   @Override
   public void initialize(Parent parent) {
     super.initialize(parent);
+    this.children.clear();
     boolean maximize = this.editorContext || !this.hudWidget.getConfig().minimizeIngame().get();
     if (maximize) {
       this.addId("maximized");
