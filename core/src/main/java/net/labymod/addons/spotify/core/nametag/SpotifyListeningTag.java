@@ -43,7 +43,7 @@ public class SpotifyListeningTag extends NameTag {
 
   @Override
   protected @Nullable RenderableComponent getRenderableComponent() {
-    if (!(this.entity instanceof Player)) {
+    if (!(this.entity instanceof Player) || this.entity.isCrouching()) {
       return null;
     }
 

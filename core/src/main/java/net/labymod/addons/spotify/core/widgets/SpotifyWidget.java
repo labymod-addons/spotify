@@ -21,6 +21,7 @@ import de.labystudio.spotifyapi.model.MediaKey;
 import de.labystudio.spotifyapi.model.Track;
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import de.labystudio.spotifyapi.open.model.track.Image;
+import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.Textures.SpriteControls;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
 import net.labymod.api.Laby;
@@ -292,6 +293,10 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
       return;
     }
 
-    this.spotifyAPI.pressMediaKey(mediaKey);
+    try {
+      this.spotifyAPI.pressMediaKey(mediaKey);
+    } catch (IllegalArgumentException e) {
+      SpotifyAddon.get().logger().error("Failed to press media key", e);
+    }
   }
 }
