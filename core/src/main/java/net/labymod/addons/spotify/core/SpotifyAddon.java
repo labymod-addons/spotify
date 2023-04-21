@@ -18,7 +18,6 @@ package net.labymod.addons.spotify.core;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.SpotifyAPIFactory;
-import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyTextHudWidget;
 import net.labymod.addons.spotify.core.interaction.SpotifyTrackBulletPoint;
@@ -47,6 +46,7 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
   private static SpotifyAddon instance;
   private final SpotifyAPI spotifyAPI;
 
+
   public SpotifyAddon() {
     SpotifyAddon.instance = this;
     this.spotifyAPI = SpotifyAPIFactory.create();
@@ -65,7 +65,7 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     this.spotifyAPI.registerListener(spotifyApiListener);
     this.initializeSpotifyAPI();
 
-    OpenSpotifyAPI openSpotifyAPI = new OpenSpotifyAPI();
+    OpenSpotifyAPIWrapper openSpotifyAPI = new OpenSpotifyAPIWrapper();
 
     HudWidgetRegistry registry = this.labyAPI().hudWidgetRegistry();
     registry.register(new SpotifyTextHudWidget("spotify_track", this.hudIcon, this.spotifyAPI));

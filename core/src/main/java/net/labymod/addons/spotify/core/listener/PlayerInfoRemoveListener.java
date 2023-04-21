@@ -16,7 +16,9 @@
 
 package net.labymod.addons.spotify.core.listener;
 
+import java.util.UUID;
 import net.labymod.addons.spotify.core.misc.BroadcastController;
+import net.labymod.api.Laby;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.client.network.playerinfo.PlayerInfoRemoveEvent;
 
@@ -30,6 +32,11 @@ public class PlayerInfoRemoveListener {
 
   @Subscribe
   public void onPlayerInfoRemove(PlayerInfoRemoveEvent event) {
-    this.broadcastController.remove(event.playerInfo().profile().getUniqueId());
+    UUID uniqueId = event.playerInfo().profile().getUniqueId();
+    if (uniqueId.equals(Laby.labyAPI().getUniqueId())) {
+      return;
+    }
+
+    this.broadcastController.remove(uniqueId);
   }
 }

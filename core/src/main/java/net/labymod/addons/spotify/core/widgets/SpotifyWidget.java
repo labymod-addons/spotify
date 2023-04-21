@@ -19,8 +19,8 @@ package net.labymod.addons.spotify.core.widgets;
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.model.MediaKey;
 import de.labystudio.spotifyapi.model.Track;
-import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import de.labystudio.spotifyapi.open.model.track.Image;
+import net.labymod.addons.spotify.core.OpenSpotifyAPIWrapper;
 import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.Textures.SpriteControls;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
@@ -44,7 +44,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
 
   private static final String PROGRESS_VISIBLE_KEY = "--progress-visible";
 
-  private final OpenSpotifyAPI openSpotifyAPI;
+  private final OpenSpotifyAPIWrapper openSpotifyAPI;
   private final SpotifyHudWidget hudWidget;
   private final SpotifyAPI spotifyAPI;
   private final boolean editorContext;
@@ -60,7 +60,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   private int lastTickPosition = -1;
 
   public SpotifyWidget(
-      OpenSpotifyAPI openSpotifyAPI,
+      OpenSpotifyAPIWrapper openSpotifyAPI,
       SpotifyHudWidget hudWidget,
       boolean editorContext
   ) {
@@ -93,6 +93,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     this.addId(leftAligned ? "left" : "right");
 
     this.coverWidget = new IconWidget(this.hudWidget.getIcon());
+    this.coverWidget.setCleanupOnDispose(true);
     this.coverWidget.addId("cover");
 
     if (!maximize) {
@@ -260,7 +261,16 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     String totalTimeDisplay = String.format("%d:%02d", length / 60, length % 60);
     this.totalTimeWidget.setComponent(Component.text(totalTimeDisplay));
 
-    this.openSpotifyAPI.requestOpenTrackAsync(track, openTrack -> {
+    this.openSpotifyAPI.get(track.getId(), openTrack -> {
+      if (openTrack != null) {
+        String artists = openTrack.getArtists();
+        if (artists != null) {
+          this.labyAPI.minecraft().executeOnRenderThread(
+              () -> this.artistWidget.setComponent(Component.text(artists))
+          );
+        }
+      }
+
       if (openTrack == null || openTrack.album == null || openTrack.album.images == null
           || openTrack.album.images.isEmpty()) {
         this.labyAPI.minecraft().executeOnRenderThread(

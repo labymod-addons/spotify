@@ -17,7 +17,7 @@
 package net.labymod.addons.spotify.core.hudwidgets;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
-import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
+import net.labymod.addons.spotify.core.OpenSpotifyAPIWrapper;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
@@ -41,11 +41,11 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   public static final String COVER_VISIBILITY_REASON = "cover_visibility";
   public static final String CONNECT_REASON = "connect";
 
-  private final OpenSpotifyAPI openSpotifyAPI;
+  private final OpenSpotifyAPIWrapper openSpotifyAPI;
   private final SpotifyAPI spotifyAPI;
   private final Icon hudWidgetIcon;
 
-  public SpotifyHudWidget(String id, Icon icon, OpenSpotifyAPI openSpotifyAPI,
+  public SpotifyHudWidget(String id, Icon icon, OpenSpotifyAPIWrapper openSpotifyAPI,
       SpotifyAPI spotifyAPI) {
     super(id, SpotifyHudWidgetConfig.class);
 

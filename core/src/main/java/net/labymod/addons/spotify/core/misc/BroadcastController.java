@@ -18,7 +18,6 @@ package net.labymod.addons.spotify.core.misc;
 
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import de.labystudio.spotifyapi.open.model.track.Image;
 import de.labystudio.spotifyapi.open.model.track.OpenTrack;
 import java.util.ArrayList;
@@ -26,16 +25,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import net.labymod.addons.spotify.core.OpenSpotifyAPIWrapper;
 import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.icon.Icon;
+import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.labyconnect.LabyConnectSession;
 import net.labymod.api.util.concurrent.task.Task;
 
 public class BroadcastController {
 
-  private final OpenSpotifyAPI openSpotifyAPI;
+  private final OpenSpotifyAPIWrapper openSpotifyAPI;
   private final SpotifyAddon spotifyAddon;
   private final List<ReceivedBroadcast> receivedBroadcasts;
 
@@ -44,7 +45,7 @@ public class BroadcastController {
   private Task queuedBroadcastTask;
 
 
-  public BroadcastController(OpenSpotifyAPI openSpotifyAPI, SpotifyAddon spotifyAddon) {
+  public BroadcastController(OpenSpotifyAPIWrapper openSpotifyAPI, SpotifyAddon spotifyAddon) {
     this.openSpotifyAPI = openSpotifyAPI;
     this.spotifyAddon = spotifyAddon;
     this.receivedBroadcasts = new ArrayList<>();
@@ -57,9 +58,22 @@ public class BroadcastController {
 
   public void remove(UUID potentialListener) {
     ReceivedBroadcast broadcast = this.getBroadcast(potentialListener);
-    if (broadcast != null) {
-      this.receivedBroadcasts.remove(broadcast);
+    if (broadcast == null) {
+      return;
     }
+
+    this.receivedBroadcasts.remove(broadcast);
+    Icon icon = broadcast.icon;
+    if (icon == null) {
+      return;
+    }
+
+    ResourceLocation resourceLocation = icon.getResourceLocation();
+    if (resourceLocation == null) {
+      return;
+    }
+
+    Laby.references().textureRepository().queueTextureRelease(resourceLocation);
   }
 
   public void receive(UUID sender, String trackId) {
@@ -151,6 +165,13 @@ public class BroadcastController {
     }
 
     public void updateTrack(String trackId) {
+      if (this.icon != null) {
+        ResourceLocation resourceLocation = this.icon.getResourceLocation();
+        if (resourceLocation != null) {
+          Laby.references().textureRepository().queueTextureRelease(resourceLocation);
+        }
+      }
+
       this.trackId = trackId;
       this.track = null;
 
@@ -165,7 +186,7 @@ public class BroadcastController {
       }
 
       this.loading = true;
-      BroadcastController.this.openSpotifyAPI.requestOpenTrackAsync(this.trackId, openTrack -> {
+      BroadcastController.this.openSpotifyAPI.get(this.trackId, openTrack -> {
         if (openTrack == null || openTrack.artists == null || openTrack.artists.isEmpty()) {
           return;
         }
@@ -188,7 +209,7 @@ public class BroadcastController {
           name = name.substring(0, 29) + "...";
         }
 
-        String artist = openTrack.artists.get(0).name;
+        String artist = openTrack.getArtists();
         if (artist.length() > 32) {
           artist = artist.substring(0, 29) + "...";
         }
