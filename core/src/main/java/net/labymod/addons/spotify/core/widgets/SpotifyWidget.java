@@ -196,19 +196,11 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     );
 
     if (!this.editorContext) {
-      if (this.hudWidget.getConfig().minimizeIngame().get()) {
-        boolean isChatOpen = Laby.references().chatAccessor().isChatOpen();
-        if (this.chatOpen != isChatOpen) {
-          if (isChatOpen) {
-            this.addId("maximized");
-          } else {
-            this.removeId("maximized");
-          }
-
-          this.chatOpen = isChatOpen;
-        }
-      } else {
+      boolean isChatOpen = Laby.references().chatAccessor().isChatOpen();
+      if (!this.hudWidget.getConfig().minimizeIngame().get() || isChatOpen) {
         this.addId("maximized");
+      } else {
+        this.removeId("maximized");
       }
     }
 
