@@ -32,8 +32,8 @@ labyMod {
     }
 
     addonDev {
-        localRelease()
-        //internalRelease()
+        //localRelease()
+        internalRelease()
     }
 }
 
