@@ -20,7 +20,7 @@ labyMod {
     }
 
     minecraft {
-        registerVersions("1.8.9", "1.17.1", "1.18.2", "1.19.2", "1.19.3", "1.19.4-pre1") { version, provider ->
+        registerVersions("1.20.1") { version, provider ->
             configureRun(provider, version)
         }
 
@@ -32,6 +32,7 @@ labyMod {
     }
 
     addonDev {
+        //localRelease()
         internalRelease()
     }
 }
