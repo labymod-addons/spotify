@@ -5,7 +5,7 @@ plugins {
 dependencies {
     api(project(":api"))
 
-    maven("https://jitpack.io/", "com.github.LabyStudio:java-spotify-api:1.1.12")
+    maven("https://jitpack.io/", "com.github.LabyStudio:java-spotify-api:1.1.13")
 }
 
 labyModProcessor {
