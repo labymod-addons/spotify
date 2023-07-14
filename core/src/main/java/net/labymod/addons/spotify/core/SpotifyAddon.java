@@ -65,7 +65,7 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     this.spotifyAPI.registerListener(spotifyApiListener);
     this.initializeSpotifyAPI();
 
-    OpenSpotifyAPIWrapper openSpotifyAPI = new OpenSpotifyAPIWrapper();
+    OpenSpotifyAPIWrapper openSpotifyAPI = new OpenSpotifyAPIWrapper(this.spotifyAPI.getOpenAPI());
 
     HudWidgetRegistry registry = this.labyAPI().hudWidgetRegistry();
     registry.register(new SpotifyTextHudWidget("spotify_track", this.hudIcon, this.spotifyAPI));

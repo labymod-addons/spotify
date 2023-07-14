@@ -26,8 +26,12 @@ import java.util.function.Consumer;
 
 public class OpenSpotifyAPIWrapper {
 
-  private final OpenSpotifyAPI openSpotifyAPI = new OpenSpotifyAPI();
+  private final OpenSpotifyAPI openSpotifyAPI;
   private final Map<String, List<Consumer<OpenTrack>>> pendingRequests = new HashMap<>();
+
+  public OpenSpotifyAPIWrapper(OpenSpotifyAPI openSpotifyAPI) {
+    this.openSpotifyAPI = openSpotifyAPI;
+  }
 
   public void get(String trackId, Consumer<OpenTrack> callback) {
     List<Consumer<OpenTrack>> resultCallbacks = this.pendingRequests.get(trackId);
