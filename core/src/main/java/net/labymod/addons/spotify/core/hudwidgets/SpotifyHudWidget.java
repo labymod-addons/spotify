@@ -26,13 +26,12 @@ import net.labymod.addons.spotify.core.widgets.SpotifyWidget;
 import net.labymod.api.client.gui.hud.hudwidget.HudWidgetConfig;
 import net.labymod.api.client.gui.hud.hudwidget.widget.WidgetHudWidget;
 import net.labymod.api.client.gui.icon.Icon;
-import net.labymod.api.client.gui.screen.widget.AbstractWidget;
-import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.client.gui.screen.widget.widgets.hud.HudWidgetWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.SwitchWidget.SwitchSetting;
 import net.labymod.api.configuration.loader.property.ConfigProperty;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.util.ThreadSafe;
+import net.labymod.api.util.bounds.area.RectangleAreaPosition;
 
 public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
 
@@ -55,6 +54,17 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   }
 
   @Override
+  public void initializePreConfigured(SpotifyHudWidgetConfig config) {
+    super.initializePreConfigured(config);
+
+    config.setEnabled(true);
+    config.setAreaIdentifier(RectangleAreaPosition.TOP_RIGHT);
+    config.setX(-2);
+    config.setY(2);
+    config.setParentToTailOfChainIn(RectangleAreaPosition.TOP_RIGHT);
+  }
+
+  @Override
   public void load(SpotifyHudWidgetConfig config) {
     super.load(config);
 
@@ -67,13 +77,10 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   }
 
   @Override
-  public void initialize(AbstractWidget<Widget> widget) {
+  public void initialize(HudWidgetWidget widget) {
     super.initialize(widget);
 
-    boolean editorContext = false;
-    if (widget instanceof HudWidgetWidget) {
-      editorContext = ((HudWidgetWidget) widget).accessor().isEditor();
-    }
+    boolean editorContext = widget.accessor().isEditor();
 
     SpotifyWidget spotifyWidget = new SpotifyWidget(this.openSpotifyAPI, this, editorContext);
     widget.addChild(spotifyWidget);

@@ -5,7 +5,7 @@ plugins {
 dependencies {
     api(project(":api"))
 
-    maven("https://jitpack.io/", "com.github.LabyStudio:java-spotify-api:1.1.12")
+    maven("https://jitpack.io/", "com.github.LabyStudio:java-spotify-api:1.1.14")
 }
 
 labyModProcessor {
@@ -13,6 +13,6 @@ labyModProcessor {
 }
 
 tasks.compileJava {
-    sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-    targetCompatibility = JavaVersion.VERSION_1_8.toString()
+    sourceCompatibility = JavaVersion.VERSION_17.toString()
+    targetCompatibility = JavaVersion.VERSION_17.toString()
 }
