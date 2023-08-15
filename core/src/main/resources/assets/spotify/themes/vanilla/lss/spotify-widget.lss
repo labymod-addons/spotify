@@ -47,7 +47,6 @@ Spotify {
         height: 100%;
         width: 30;
         padding: 1;
-        visible: false;
 
         Icon {
           width: 8;
@@ -101,10 +100,6 @@ Spotify {
 
     .minimized-bar {
       visible: false;
-    }
-
-    .controls {
-      visible: true;
     }
 
     .progress {
