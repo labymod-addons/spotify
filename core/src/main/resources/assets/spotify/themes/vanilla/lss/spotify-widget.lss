@@ -51,6 +51,8 @@ Spotify {
         Icon {
           width: 8;
           height: 8;
+
+          visible: false;
         }
 
         .play {
@@ -100,6 +102,12 @@ Spotify {
 
     .minimized-bar {
       visible: false;
+    }
+
+    .controls {
+      Icon {
+        visible: true;
+      }
     }
 
     .progress {

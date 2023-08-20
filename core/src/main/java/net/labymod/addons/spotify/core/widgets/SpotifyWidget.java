@@ -127,9 +127,6 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     // Controls
     this.controlsWidget = new DivWidget();
     this.controlsWidget.addId("controls");
-    if (!maximize) {
-      this.controlsWidget.setVisible(false);
-    }
 
     this.playPauseWidget = new IconWidget(
         this.spotifyAPI.isPlaying() ? SpriteControls.PAUSE : SpriteControls.PLAY
@@ -204,14 +201,8 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
 
       if (!this.hudWidget.getConfig().minimizeIngame().get() || isChatOpen) {
         this.addId("maximized");
-        if (this.controlsWidget != null) {
-          this.controlsWidget.setVisible(true);
-        }
       } else {
         this.removeId("maximized");
-        if (this.controlsWidget != null) {
-          this.controlsWidget.setVisible(false);
-        }
       }
     }
 
