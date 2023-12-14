@@ -52,6 +52,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   private ComponentWidget trackWidget;
   private ComponentWidget artistWidget;
   private IconWidget coverWidget;
+  private DivWidget controlsWidget;
   private ComponentWidget currentTimeWidget;
   private ComponentWidget totalTimeWidget;
   private IconWidget playPauseWidget;
@@ -124,8 +125,8 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     text.addChild(this.artistWidget);
 
     // Controls
-    DivWidget controls = new DivWidget();
-    controls.addId("controls");
+    this.controlsWidget = new DivWidget();
+    this.controlsWidget.addId("controls");
 
     this.playPauseWidget = new IconWidget(
         this.spotifyAPI.isPlaying() ? SpriteControls.PAUSE : SpriteControls.PLAY
@@ -138,24 +139,24 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
 
       this.pressMediaKey(MediaKey.PLAY_PAUSE);
     });
-    controls.addChild(this.playPauseWidget);
+    this.controlsWidget.addChild(this.playPauseWidget);
 
     IconWidget previousTrack = new IconWidget(SpriteControls.PREVIOUS);
     previousTrack.addId("previous");
     previousTrack.setPressable(() -> this.pressMediaKey(MediaKey.PREV));
-    controls.addChild(previousTrack);
+    this.controlsWidget.addChild(previousTrack);
 
     IconWidget nextTrack = new IconWidget(SpriteControls.NEXT);
     nextTrack.addId("next");
     nextTrack.setPressable(() -> this.pressMediaKey(MediaKey.NEXT));
-    controls.addChild(nextTrack);
+    this.controlsWidget.addChild(nextTrack);
 
     // Add text & controls to player based on the alignment
     if (leftAligned) {
       textAndControl.addFlexibleContent(text);
-      textAndControl.addContent(controls);
+      textAndControl.addContent(this.controlsWidget);
     } else {
-      textAndControl.addContent(controls);
+      textAndControl.addContent(this.controlsWidget);
       textAndControl.addFlexibleContent(text);
     }
 
@@ -197,6 +198,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
 
     if (!this.editorContext) {
       boolean isChatOpen = Laby.references().chatAccessor().isChatOpen();
+
       if (!this.hudWidget.getConfig().minimizeIngame().get() || isChatOpen) {
         this.addId("maximized");
       } else {

@@ -47,11 +47,12 @@ Spotify {
         height: 100%;
         width: 30;
         padding: 1;
-        visible: false;
 
         Icon {
           width: 8;
           height: 8;
+
+          visible: false;
         }
 
         .play {
@@ -104,7 +105,9 @@ Spotify {
     }
 
     .controls {
-      visible: true;
+      Icon {
+        visible: true;
+      }
     }
 
     .progress {

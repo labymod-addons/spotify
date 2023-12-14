@@ -42,13 +42,15 @@ public class ProgressBarWidget extends SimpleWidget {
   @Override
   public void renderWidget(Stack stack, MutableMouse mouse, float partialTicks) {
     super.renderWidget(stack, mouse, partialTicks);
-    float progress = 1.0F / this.spotifyAPI.getTrack().getLength() * this.spotifyAPI.getPosition();
-    Bounds bounds = this.bounds();
-    RECTANGLE_RENDERER
-        .pos(bounds.getLeft(), bounds.getTop())
-        .size(bounds.getWidth() * progress, bounds.getHeight())
-        .color(this.foregroundColor.get())
-        .render(stack);
+    if (this.spotifyAPI.hasPosition()) {
+      float progress = 1.0F / this.spotifyAPI.getTrack().getLength() * this.spotifyAPI.getPosition();
+      Bounds bounds = this.bounds();
+      RECTANGLE_RENDERER
+          .pos(bounds.getLeft(), bounds.getTop())
+          .size(bounds.getWidth() * progress, bounds.getHeight())
+          .color(this.foregroundColor.get())
+          .render(stack);
+    }
   }
 
   public LssProperty<Integer> foregroundColor() {
