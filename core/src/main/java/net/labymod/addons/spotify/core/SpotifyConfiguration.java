@@ -16,6 +16,7 @@
 
 package net.labymod.addons.spotify.core;
 
+import java.util.function.Consumer;
 import net.labymod.api.addon.AddonConfig;
 import net.labymod.api.client.gui.screen.widget.widgets.input.SwitchWidget.SwitchSetting;
 import net.labymod.api.configuration.loader.annotation.ConfigName;
@@ -73,5 +74,10 @@ public class SpotifyConfiguration extends AddonConfig {
 
   public ConfigProperty<Boolean> displayExplicitTracks() {
     return this.displayExplicitTracks;
+  }
+
+  public boolean getAndAddListener(ConfigProperty<Boolean> property, Consumer<Boolean> listener) {
+    property.addChangeListener(listener);
+    return property.get();
   }
 }
