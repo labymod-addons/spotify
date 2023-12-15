@@ -53,6 +53,10 @@ subprojects {
         header(rootProject.file("gradle/LICENSE-HEADER.txt"))
         newLine.set(true)
     }
+
+    val shade = configurations.create("shade")
+    val api by configurations
+    api.extendsFrom(shade)
 }
 
 fun configureRun(provider: net.labymod.gradle.core.minecraft.provider.VersionProvider, gameVersion: String) {
