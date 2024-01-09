@@ -7,7 +7,7 @@ dependencies {
     api(project(":api"))
 
     //maven("https://jitpack.io/", "com.github.LabyStudio:java-spotify-api:1.1.16")
-    shade(files("../libs/java-spotify-api-1.1.17.jar"))
+    shade(files("../libs/java-spotify-api-1.2.0.jar"))
 }
 
 labyModProcessor {
