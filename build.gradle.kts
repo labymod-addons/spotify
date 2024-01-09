@@ -32,7 +32,7 @@ labyMod {
     }
 
     addonDev {
-        internalRelease()
+        productionRelease()
     }
 }
 
