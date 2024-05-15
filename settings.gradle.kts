@@ -1,7 +1,7 @@
 rootProject.name = "spotify-addon"
 
 pluginManagement {
-    val labyGradlePluginVersion = "0.3.40"
+    val labyGradlePluginVersion = "0.3.50"
     plugins {
         id("net.labymod.gradle") version (labyGradlePluginVersion)
     }
