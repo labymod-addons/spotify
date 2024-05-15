@@ -49,7 +49,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   private final SpotifyHudWidget hudWidget;
   private final SpotifyAPI spotifyAPI;
   private final boolean editorContext;
-
+  private final boolean chatOpen;
   private ComponentWidget trackWidget;
   private ComponentWidget artistWidget;
   private IconWidget coverWidget;
@@ -57,8 +57,6 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   private ComponentWidget currentTimeWidget;
   private ComponentWidget totalTimeWidget;
   private IconWidget playPauseWidget;
-
-  private final boolean chatOpen;
   private int lastTickPosition = -1;
 
   public SpotifyWidget(
@@ -195,6 +193,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     boolean hasTrack = this.spotifyAPI.hasTrack() && this.spotifyAPI.hasPosition();
     this.setVariable(PROGRESS_VISIBLE_KEY, hasTrack);
 
+    // everything with the variable LARGE_PROGRESS_VISIBLE_KEY is an ugly hotfix for IDEA-16722. Revert the changes and you'll see
     if (!this.editorContext) {
       boolean isChatOpen = Laby.references().chatAccessor().isChatOpen();
 
