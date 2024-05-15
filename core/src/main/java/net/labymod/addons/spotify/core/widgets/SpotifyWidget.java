@@ -43,6 +43,7 @@ import org.jetbrains.annotations.Nullable;
 public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
 
   private static final String PROGRESS_VISIBLE_KEY = "--progress-visible";
+  private static final String LARGE_PROGRESS_VISIBLE_KEY = "--large-progress-visible";
 
   private final OpenSpotifyAPIWrapper openSpotifyAPI;
   private final SpotifyHudWidget hudWidget;
@@ -57,7 +58,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   private ComponentWidget totalTimeWidget;
   private IconWidget playPauseWidget;
 
-  private boolean chatOpen;
+  private final boolean chatOpen;
   private int lastTickPosition = -1;
 
   public SpotifyWidget(
@@ -71,10 +72,9 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     this.spotifyAPI = this.hudWidget.spotifyAPI();
     this.chatOpen = !Laby.references().chatAccessor().isChatOpen();
 
-    this.setVariable(
-        PROGRESS_VISIBLE_KEY,
-        String.valueOf(this.spotifyAPI.hasTrack() && this.spotifyAPI.hasPosition())
-    );
+    boolean hasTrack = this.spotifyAPI.hasTrack() && this.spotifyAPI.hasPosition();
+    this.setVariable(PROGRESS_VISIBLE_KEY, hasTrack);
+    this.setVariable(LARGE_PROGRESS_VISIBLE_KEY, hasTrack);
   }
 
   @Override
@@ -191,19 +191,22 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   @Override
   public void tick() {
     super.tick();
-    this.setVariable(
-        PROGRESS_VISIBLE_KEY,
-        String.valueOf(this.spotifyAPI.hasTrack() && this.spotifyAPI.hasPosition())
-    );
+
+    boolean hasTrack = this.spotifyAPI.hasTrack() && this.spotifyAPI.hasPosition();
+    this.setVariable(PROGRESS_VISIBLE_KEY, hasTrack);
 
     if (!this.editorContext) {
       boolean isChatOpen = Laby.references().chatAccessor().isChatOpen();
 
       if (!this.hudWidget.getConfig().minimizeIngame().get() || isChatOpen) {
         this.addId("maximized");
+        this.setVariable(LARGE_PROGRESS_VISIBLE_KEY, hasTrack);
       } else {
         this.removeId("maximized");
+        this.setVariable(LARGE_PROGRESS_VISIBLE_KEY, false);
       }
+    } else {
+      this.setVariable(LARGE_PROGRESS_VISIBLE_KEY, hasTrack);
     }
 
     if (this.spotifyAPI.hasPosition() && this.currentTimeWidget != null) {

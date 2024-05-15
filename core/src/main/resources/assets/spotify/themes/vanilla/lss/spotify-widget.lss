@@ -97,6 +97,31 @@ Spotify {
     }
   }
 
+  .progress {
+    margin-right: 1;
+    visible: var(--large-progress-visible);
+
+    orientation: horizontal;
+    height: 8;
+    width: 100%;
+    space-between-entries: 2;
+
+    .full-bar {
+      left: 0;
+      top: 50%;
+      max-height: 2;
+      width: 100%;
+      alignment-y: center;
+
+      margin-bottom: 2;
+      margin-left: 1;
+    }
+
+    Component {
+      font-size: small;
+    }
+  }
+
   &.maximized {
     background-color: #1a1a1a;
 
@@ -107,31 +132,6 @@ Spotify {
     .controls {
       Icon {
         visible: true;
-      }
-    }
-
-    .progress {
-      margin-right: 1;
-      visible: var(--progress-visible);
-
-      orientation: horizontal;
-      height: 8;
-      width: 100%;
-      space-between-entries: 2;
-
-      .full-bar {
-        left: 0;
-        top: 50%;
-        max-height: 2;
-        width: 100%;
-        alignment-y: center;
-
-        margin-bottom: 2;
-        margin-left: 1;
-      }
-
-      Component {
-        font-size: small;
       }
     }
   }
