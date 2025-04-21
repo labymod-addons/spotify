@@ -25,6 +25,7 @@ import net.labymod.api.client.component.Component;
 import net.labymod.api.client.entity.player.Player;
 import net.labymod.api.client.entity.player.tag.tags.NameTag;
 import net.labymod.api.client.gui.HorizontalAlignment;
+import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.render.RenderPipeline;
 import net.labymod.api.client.render.draw.RectangleRenderer;
 import net.labymod.api.client.render.font.RenderableComponent;
@@ -134,10 +135,12 @@ public class SpotifyListeningTag extends NameTag {
     );
 
     float textX = x;
-    if (this.receivedBroadcast.icon != null && this.displayTrackCover) {
-      this.renderPipeline.renderSeeThrough(this.entity, () ->
-          this.receivedBroadcast.icon.render(stack, x + 1, y + 1, height - 2)
-      );
+
+    Icon icon = this.receivedBroadcast == null ? null : this.receivedBroadcast.icon;
+    if (icon != null && this.displayTrackCover) {
+      this.renderPipeline.renderSeeThrough(this.entity, () -> {
+        icon.render(stack, x + 1, y + 1, height - 2);
+      });
 
       textX += height + 1;
     }
