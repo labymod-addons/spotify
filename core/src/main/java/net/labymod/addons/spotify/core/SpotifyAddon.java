@@ -18,6 +18,8 @@ package net.labymod.addons.spotify.core;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.SpotifyAPIFactory;
+import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
+import de.labystudio.spotifyapi.open.totp.provider.SecretProvider;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
 import net.labymod.addons.spotify.core.hudwidgets.SpotifyTextHudWidget;
 import net.labymod.addons.spotify.core.interaction.SpotifyTrackBulletPoint;
@@ -28,6 +30,7 @@ import net.labymod.addons.spotify.core.listener.SpotifyTrackChangedListener;
 import net.labymod.addons.spotify.core.misc.BroadcastController;
 import net.labymod.addons.spotify.core.misc.ReconnectDelay;
 import net.labymod.addons.spotify.core.nametag.SpotifyListeningTag;
+import net.labymod.addons.spotify.core.secret.HttpSecretProvider;
 import net.labymod.api.addon.LabyAddon;
 import net.labymod.api.client.entity.player.tag.PositionType;
 import net.labymod.api.client.gui.hud.HudWidgetRegistry;
@@ -65,7 +68,9 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     this.spotifyAPI.registerListener(spotifyApiListener);
     this.initializeSpotifyAPI();
 
-    OpenSpotifyAPIWrapper openSpotifyAPI = new OpenSpotifyAPIWrapper(this.spotifyAPI.getOpenAPI());
+    SecretProvider secretProvider = new HttpSecretProvider();
+    OpenSpotifyAPI openApi = new OpenSpotifyAPI(secretProvider);
+    OpenSpotifyAPIWrapper openSpotifyAPI = new OpenSpotifyAPIWrapper(openApi);
 
     HudWidgetRegistry registry = this.labyAPI().hudWidgetRegistry();
     registry.register(new SpotifyTextHudWidget("spotify_track", this.hudIcon, this.spotifyAPI));
