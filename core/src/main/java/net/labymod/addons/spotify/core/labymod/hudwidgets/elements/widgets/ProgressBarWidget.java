@@ -14,17 +14,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.spotify.core.widgets;
+package net.labymod.addons.spotify.core.labymod.hudwidgets.elements.widgets;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
 import net.labymod.api.Laby;
 import net.labymod.api.client.gui.lss.property.LssProperty;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
-import net.labymod.api.client.gui.mouse.MutableMouse;
+import net.labymod.api.client.gui.screen.ScreenContext;
 import net.labymod.api.client.gui.screen.widget.SimpleWidget;
 import net.labymod.api.client.gui.screen.widget.attributes.bounds.Bounds;
 import net.labymod.api.client.render.draw.RectangleRenderer;
-import net.labymod.api.client.render.matrix.Stack;
 
 @AutoWidget
 public class ProgressBarWidget extends SimpleWidget {
@@ -40,16 +39,18 @@ public class ProgressBarWidget extends SimpleWidget {
   }
 
   @Override
-  public void renderWidget(Stack stack, MutableMouse mouse, float partialTicks) {
-    super.renderWidget(stack, mouse, partialTicks);
+  public void renderWidget(ScreenContext context) {
+    super.renderWidget(context);
+
     if (this.spotifyAPI.hasPosition()) {
-      float progress = 1.0F / this.spotifyAPI.getTrack().getLength() * this.spotifyAPI.getPosition();
+      float progress =
+          1.0F / this.spotifyAPI.getTrack().getLength() * this.spotifyAPI.getPosition();
       Bounds bounds = this.bounds();
       RECTANGLE_RENDERER
           .pos(bounds.getLeft(), bounds.getTop())
           .size(bounds.getWidth() * progress, bounds.getHeight())
           .color(this.foregroundColor.get())
-          .render(stack);
+          .render(context.stack());
     }
   }
 

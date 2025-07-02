@@ -14,13 +14,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.spotify.core.interaction;
+package net.labymod.addons.spotify.core.labymod.interaction;
 
-import java.util.UUID;
 import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.SpotifyConfiguration;
-import net.labymod.addons.spotify.core.misc.BroadcastController;
-import net.labymod.addons.spotify.core.misc.BroadcastController.ReceivedBroadcast;
+import net.labymod.addons.spotify.core.sharing.SharedTrack;
+import net.labymod.addons.spotify.core.sharing.TrackSharingController;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.entity.player.Player;
 import net.labymod.api.client.entity.player.interaction.AbstractBulletPoint;
@@ -31,14 +30,11 @@ public class SpotifyTrackBulletPoint extends AbstractBulletPoint {
   private static final String URL = "https://open.spotify.com/track/%s?si=labymod_spotify";
 
   private final SpotifyAddon spotifyAddon;
-  private final BroadcastController broadcastController;
-
-  private UUID lastPlayer;
-  private ReceivedBroadcast lastBroadcast;
+  private final TrackSharingController broadcastController;
 
   public SpotifyTrackBulletPoint(
       SpotifyAddon spotifyAddon,
-      BroadcastController broadcastController
+      TrackSharingController broadcastController
   ) {
     super(Component.translatable("spotify.bulletPoint.open.name"));
 
@@ -48,17 +44,11 @@ public class SpotifyTrackBulletPoint extends AbstractBulletPoint {
 
   @Override
   public void execute(Player player) {
-    ReceivedBroadcast receivedBroadcast = this.broadcastController.get(player.getUniqueId());
-    if (receivedBroadcast == null) {
+    SharedTrack track = this.broadcastController.getTrackOf(player.getUniqueId());
+    if (track == null) {
       return;
     }
-
-    String trackId = receivedBroadcast.getTrackId();
-    if (trackId == null) {
-      return;
-    }
-
-    OperatingSystem.getPlatform().openUri(String.format(URL, trackId));
+    OperatingSystem.getPlatform().openUri(String.format(URL, track.getTrackId()));
   }
 
   @Override
@@ -67,11 +57,6 @@ public class SpotifyTrackBulletPoint extends AbstractBulletPoint {
     if (!configuration.enabled().get() || !configuration.displayTracks().get()) {
       return false;
     }
-
-    if (player.getUniqueId().equals(this.lastPlayer)) {
-      return true;
-    }
-
-    return this.broadcastController.get(player.getUniqueId()) != null;
+    return this.broadcastController.hasTrack(player.getUniqueId());
   }
 }

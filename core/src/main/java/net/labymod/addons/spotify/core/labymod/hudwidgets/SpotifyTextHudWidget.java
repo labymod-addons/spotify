@@ -14,7 +14,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.spotify.core.hudwidgets;
+package net.labymod.addons.spotify.core.labymod.hudwidgets;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.model.Track;
@@ -49,6 +49,8 @@ public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
     this.artistLine = super.createLine("Artist", "Loading...");
 
     this.setIcon(this.hudWidgetIcon);
+
+    this.updateTrack();
   }
 
   @Override
@@ -58,29 +60,26 @@ public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
 
   @Subscribe
   public void onSpotifyConnectEvent(SpotifyConnectEvent event) {
-    this.onPlayBackChanged(this.spotifyAPI.isPlaying());
+    this.updateTrack();
   }
 
   @Subscribe
   public void onSpotifyTrackChangedEvent(SpotifyTrackChangedEvent event) {
-    this.onTrackChanged(event.getTrack());
+    this.updateTrack();
   }
 
-  public void onTrackChanged(Track track) {
-    if (track == null) {
-      this.onPlayBackChanged(false);
-    } else {
+  public void updateTrack() {
+    if (this.trackLine == null || this.artistLine == null) {
+      return;
+    }
+
+    if (this.spotifyAPI.isPlaying()) {
+      Track track = this.spotifyAPI.getTrack();
       this.trackLine.updateAndFlush(track.getName());
       this.artistLine.updateAndFlush(track.getArtist());
-    }
-  }
-
-  public void onPlayBackChanged(boolean isPlaying) {
-    if (!isPlaying) {
+    } else {
       this.trackLine.updateAndFlush("Not playing");
       this.artistLine.updateAndFlush("Not playing");
-    } else {
-      this.onTrackChanged(this.spotifyAPI.getTrack());
     }
   }
 }

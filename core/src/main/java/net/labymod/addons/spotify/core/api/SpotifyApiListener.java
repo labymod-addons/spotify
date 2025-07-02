@@ -14,16 +14,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.spotify.core;
+package net.labymod.addons.spotify.core.api;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.SpotifyListener;
 import de.labystudio.spotifyapi.config.SpotifyConfiguration;
 import de.labystudio.spotifyapi.model.Track;
+import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
-import net.labymod.addons.spotify.core.misc.ReconnectDelay;
+import net.labymod.addons.spotify.core.util.ReconnectDelay;
 import net.labymod.api.LabyAPI;
 
 public class SpotifyApiListener implements SpotifyListener {
@@ -55,7 +56,8 @@ public class SpotifyApiListener implements SpotifyListener {
 
   @Override
   public void onPlayBackChanged(boolean isPlaying) {
-    this.labyAPI.eventBus().fire(new SpotifyPlaybackChangedEvent(isPlaying));
+    Track track = this.spotifyAPI.getTrack();
+    this.labyAPI.eventBus().fire(new SpotifyPlaybackChangedEvent(track, isPlaying));
   }
 
   @Override

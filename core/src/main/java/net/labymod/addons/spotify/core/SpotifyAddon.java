@@ -20,18 +20,16 @@ import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.SpotifyAPIFactory;
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import de.labystudio.spotifyapi.open.totp.provider.SecretProvider;
-import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
-import net.labymod.addons.spotify.core.hudwidgets.SpotifyTextHudWidget;
-import net.labymod.addons.spotify.core.interaction.SpotifyTrackBulletPoint;
-import net.labymod.addons.spotify.core.listener.BroadcastPayloadListener;
-import net.labymod.addons.spotify.core.listener.PlayerInfoRemoveListener;
-import net.labymod.addons.spotify.core.listener.SpotifyPlaybackChangedListener;
-import net.labymod.addons.spotify.core.listener.SpotifyTrackChangedListener;
-import net.labymod.addons.spotify.core.misc.BroadcastController;
-import net.labymod.addons.spotify.core.misc.ReconnectDelay;
-import net.labymod.addons.spotify.core.nametag.SpotifyListeningTag;
-import net.labymod.addons.spotify.core.secret.HttpSecretProvider;
+import net.labymod.addons.spotify.core.api.HttpSecretProvider;
+import net.labymod.addons.spotify.core.api.SpotifyApiListener;
+import net.labymod.addons.spotify.core.labymod.hudwidgets.SpotifyHudWidget;
+import net.labymod.addons.spotify.core.labymod.hudwidgets.SpotifyTextHudWidget;
+import net.labymod.addons.spotify.core.labymod.interaction.SpotifyTrackBulletPoint;
+import net.labymod.addons.spotify.core.labymod.nametag.SpotifySharedTrack;
+import net.labymod.addons.spotify.core.sharing.TrackSharingController;
+import net.labymod.addons.spotify.core.util.ReconnectDelay;
 import net.labymod.api.addon.LabyAddon;
+import net.labymod.api.client.entity.player.interaction.InteractionMenuRegistry;
 import net.labymod.api.client.entity.player.tag.PositionType;
 import net.labymod.api.client.gui.hud.HudWidgetRegistry;
 import net.labymod.api.client.gui.icon.Icon;
@@ -55,53 +53,33 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     this.spotifyAPI = SpotifyAPIFactory.create();
   }
 
-  public static SpotifyAddon get() {
-    return SpotifyAddon.instance;
-  }
-
   @Override
   protected void enable() {
     this.registerSettingCategory();
 
     SpotifyApiListener spotifyApiListener = new SpotifyApiListener(this.spotifyAPI, this);
-
     this.spotifyAPI.registerListener(spotifyApiListener);
+
     this.initializeSpotifyAPI();
 
     SecretProvider secretProvider = new HttpSecretProvider();
     OpenSpotifyAPI openApi = new OpenSpotifyAPI(secretProvider);
-    OpenSpotifyAPIWrapper openSpotifyAPI = new OpenSpotifyAPIWrapper(openApi);
 
     HudWidgetRegistry registry = this.labyAPI().hudWidgetRegistry();
     registry.register(new SpotifyTextHudWidget("spotify_track", this.hudIcon, this.spotifyAPI));
-    registry.register(
-        new SpotifyHudWidget("spotify", this.hudIcon, openSpotifyAPI, this.spotifyAPI));
+    registry.register(new SpotifyHudWidget("spotify", this.hudIcon, openApi, this.spotifyAPI));
 
-    BroadcastController broadcastController = new BroadcastController(openSpotifyAPI, this);
-    this.registerListener(new BroadcastPayloadListener(this, broadcastController));
-    this.registerListener(new SpotifyTrackChangedListener(this, broadcastController));
-    this.registerListener(new PlayerInfoRemoveListener(broadcastController));
-    this.registerListener(new SpotifyPlaybackChangedListener(
-        this,
-        this.spotifyAPI,
-        broadcastController
-    ));
+    TrackSharingController controller = new TrackSharingController(openApi, this);
+    this.labyAPI().eventBus().registerListener(controller);
 
-    this.labyAPI().interactionMenuRegistry().register(new SpotifyTrackBulletPoint(
-        this,
-        broadcastController
-    ));
+    InteractionMenuRegistry menuRegistry = this.labyAPI().interactionMenuRegistry();
+    menuRegistry.register(new SpotifyTrackBulletPoint(this, controller));
 
     this.labyAPI().tagRegistry().register(
-        "spotify_listening",
+        "spotify_shared_track",
         PositionType.BELOW_NAME,
-        new SpotifyListeningTag(this.configuration(), broadcastController)
+        new SpotifySharedTrack(this.configuration(), controller)
     );
-  }
-
-  @Override
-  protected Class<SpotifyConfiguration> configurationClass() {
-    return SpotifyConfiguration.class;
   }
 
   public void initializeSpotifyAPI() {
@@ -134,4 +112,18 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
       this.spotifyAPI.stop();
     }
   }
+
+  public SpotifyAPI getSpotifyAPI() {
+    return this.spotifyAPI;
+  }
+
+  @Override
+  protected Class<SpotifyConfiguration> configurationClass() {
+    return SpotifyConfiguration.class;
+  }
+
+  public static SpotifyAddon get() {
+    return SpotifyAddon.instance;
+  }
+
 }

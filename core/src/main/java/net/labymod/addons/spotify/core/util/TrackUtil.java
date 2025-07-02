@@ -14,27 +14,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.spotify.core.events;
+package net.labymod.addons.spotify.core.util;
 
-import de.labystudio.spotifyapi.model.Track;
-import net.labymod.api.event.Event;
+import de.labystudio.spotifyapi.open.model.track.Image;
+import de.labystudio.spotifyapi.open.model.track.OpenTrack;
 
-public class SpotifyPlaybackChangedEvent implements Event {
+public class TrackUtil {
 
-  private final Track track;
-  private final boolean isPlaying;
-
-  public SpotifyPlaybackChangedEvent(Track track, boolean isPlaying) {
-    this.track = track;
-    this.isPlaying = isPlaying;
+  public static Image getSmallestImage(OpenTrack openTrack) {
+    Image target = null;
+    for (Image image : openTrack.album.images) {
+      if (target == null || image.width < target.width) {
+        target = image;
+      }
+    }
+    return target;
   }
 
-  public Track getTrack() {
-    return this.track;
-  }
-
-  public boolean isPlaying() {
-    return this.isPlaying;
+  public static boolean isTrackIdValid(String trackId) {
+    for (char c : trackId.toCharArray()) {
+      boolean isValidCharacter = c >= 'a' && c <= 'z'
+          || c >= 'A' && c <= 'Z'
+          || c >= '0' && c <= '9';
+      if (!isValidCharacter) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }

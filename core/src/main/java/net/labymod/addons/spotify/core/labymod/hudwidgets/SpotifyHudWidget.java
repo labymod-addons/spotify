@@ -14,15 +14,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.spotify.core.hudwidgets;
+package net.labymod.addons.spotify.core.labymod.hudwidgets;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
-import net.labymod.addons.spotify.core.OpenSpotifyAPIWrapper;
+import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
-import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget.SpotifyHudWidgetConfig;
-import net.labymod.addons.spotify.core.widgets.SpotifyWidget;
+import net.labymod.addons.spotify.core.labymod.hudwidgets.SpotifyHudWidget.SpotifyHudWidgetConfig;
+import net.labymod.addons.spotify.core.labymod.hudwidgets.elements.widgets.SpotifyWidget;
 import net.labymod.api.client.gui.hud.hudwidget.HudWidgetConfig;
 import net.labymod.api.client.gui.hud.hudwidget.widget.WidgetHudWidget;
 import net.labymod.api.client.gui.icon.Icon;
@@ -40,12 +40,16 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   public static final String COVER_VISIBILITY_REASON = "cover_visibility";
   public static final String CONNECT_REASON = "connect";
 
-  private final OpenSpotifyAPIWrapper openSpotifyAPI;
+  private final OpenSpotifyAPI openSpotifyAPI;
   private final SpotifyAPI spotifyAPI;
   private final Icon hudWidgetIcon;
 
-  public SpotifyHudWidget(String id, Icon icon, OpenSpotifyAPIWrapper openSpotifyAPI,
-      SpotifyAPI spotifyAPI) {
+  public SpotifyHudWidget(
+      String id,
+      Icon icon,
+      OpenSpotifyAPI openSpotifyAPI,
+      SpotifyAPI spotifyAPI
+  ) {
     super(id, SpotifyHudWidgetConfig.class);
 
     this.hudWidgetIcon = icon;

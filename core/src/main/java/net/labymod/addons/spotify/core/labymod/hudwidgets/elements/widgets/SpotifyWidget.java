@@ -14,16 +14,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.spotify.core.widgets;
+package net.labymod.addons.spotify.core.labymod.hudwidgets.elements.widgets;
+
+import static net.labymod.addons.spotify.core.util.TrackUtil.getSmallestImage;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.model.MediaKey;
 import de.labystudio.spotifyapi.model.Track;
+import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import de.labystudio.spotifyapi.open.model.track.Image;
-import net.labymod.addons.spotify.core.OpenSpotifyAPIWrapper;
 import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.Textures.SpriteControls;
-import net.labymod.addons.spotify.core.hudwidgets.SpotifyHudWidget;
+import net.labymod.addons.spotify.core.labymod.hudwidgets.SpotifyHudWidget;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.hud.hudwidget.HudWidget.Updatable;
@@ -36,6 +38,7 @@ import net.labymod.api.client.gui.screen.widget.widgets.DivWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.VerticalListWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.renderer.IconWidget;
+import net.labymod.api.client.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 @AutoWidget
@@ -45,7 +48,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   private static final String PROGRESS_VISIBLE_KEY = "--progress-visible";
   private static final String LARGE_PROGRESS_VISIBLE_KEY = "--large-progress-visible";
 
-  private final OpenSpotifyAPIWrapper openSpotifyAPI;
+  private final OpenSpotifyAPI openSpotifyAPI;
   private final SpotifyHudWidget hudWidget;
   private final SpotifyAPI spotifyAPI;
   private final boolean editorContext;
@@ -60,7 +63,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   private int lastTickPosition = -1;
 
   public SpotifyWidget(
-      OpenSpotifyAPIWrapper openSpotifyAPI,
+      OpenSpotifyAPI openSpotifyAPI,
       SpotifyHudWidget hudWidget,
       boolean editorContext
   ) {
@@ -257,40 +260,32 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     String totalTimeDisplay = String.format("%d:%02d", length / 60, length % 60);
     this.totalTimeWidget.setComponent(Component.text(totalTimeDisplay));
 
-    this.openSpotifyAPI.get(track.getId(), openTrack -> {
-      if (openTrack != null) {
+    // Request track information from the OpenSpotifyAPI
+    this.openSpotifyAPI.requestOpenTrackAsync(track.getId(), openTrack -> {
+      this.labyAPI.minecraft().executeOnRenderThread(() -> {
+        if (openTrack == null) {
+          // Set fallback icon
+          this.coverWidget.icon().set(this.hudWidget.getIcon());
+          return;
+        }
+
+        // Update artists from API
         String artists = openTrack.getArtists();
         if (artists != null) {
-          this.labyAPI.minecraft().executeOnRenderThread(
-              () -> this.artistWidget.setComponent(Component.text(artists))
-          );
+          this.artistWidget.setComponent(Component.text(artists));
         }
-      }
 
-      if (openTrack == null || openTrack.album == null || openTrack.album.images == null
-          || openTrack.album.images.isEmpty()) {
-        this.labyAPI.minecraft().executeOnRenderThread(
-            () -> this.coverWidget.icon().set(this.hudWidget.getIcon())
-        );
-
-        return;
-      }
-
-      Image smallestImage = null;
-      for (Image image : openTrack.album.images) {
-        if (smallestImage == null || image.width < smallestImage.width) {
-          smallestImage = image;
+        // Update track icon
+        Image artwork = getSmallestImage(openTrack);
+        if (artwork == null) {
+          // Set fallback icon
+          this.coverWidget.icon().set(this.hudWidget.getIcon());
+        } else {
+          ResourceLocation resource = this.coverWidget.icon().get().getResourceLocation();
+          Icon icon = Icon.url(artwork.url, resource);
+          this.coverWidget.icon().set(icon);
         }
-      }
-
-      Image finalSmallestImage = smallestImage;
-      this.labyAPI.minecraft().executeOnRenderThread(
-          () -> this.coverWidget.icon().set(Icon.url(
-                  finalSmallestImage.url,
-                  this.coverWidget.icon().get().resourceLocation()
-              )
-          )
-      );
+      });
     });
   }
 

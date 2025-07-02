@@ -14,12 +14,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.labymod.addons.spotify.core.nametag;
+package net.labymod.addons.spotify.core.labymod.nametag;
 
-import de.labystudio.spotifyapi.open.model.track.OpenTrack;
 import net.labymod.addons.spotify.core.SpotifyConfiguration;
-import net.labymod.addons.spotify.core.misc.BroadcastController;
-import net.labymod.addons.spotify.core.misc.BroadcastController.ReceivedBroadcast;
+import net.labymod.addons.spotify.core.sharing.SharedTrack;
+import net.labymod.addons.spotify.core.sharing.TrackSharingController;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.entity.player.Player;
@@ -32,25 +31,23 @@ import net.labymod.api.client.render.font.RenderableComponent;
 import net.labymod.api.client.render.matrix.Stack;
 import org.jetbrains.annotations.Nullable;
 
-public class SpotifyListeningTag extends NameTag {
+public class SpotifySharedTrack extends NameTag {
 
   private final RenderPipeline renderPipeline;
   private final RectangleRenderer rectangleRenderer;
 
-  private final BroadcastController broadcastController;
+  private final TrackSharingController controller;
 
   private boolean enabled;
   private boolean displayTracks;
   private boolean displayExplicitTracks;
   private boolean displayTrackCover;
 
-  private ReceivedBroadcast receivedBroadcast;
-
-  public SpotifyListeningTag(
+  public SpotifySharedTrack(
       SpotifyConfiguration configuration,
-      BroadcastController broadcastController
+      TrackSharingController controller
   ) {
-    this.broadcastController = broadcastController;
+    this.controller = controller;
     this.renderPipeline = Laby.references().renderPipeline();
     this.rectangleRenderer = this.renderPipeline.rectangleRenderer();
 
@@ -85,31 +82,23 @@ public class SpotifyListeningTag extends NameTag {
       return null;
     }
 
-    ReceivedBroadcast receivedBroadcast = this.broadcastController.get(this.entity.getUniqueId());
-    if (receivedBroadcast == null) {
+    SharedTrack track = this.controller.getTrackOf(this.entity.getUniqueId());
+    if (track == null) {
       return null;
     }
 
-    OpenTrack track = receivedBroadcast.track;
-    if (track != null && track.explicit && !this.displayExplicitTracks) {
+    if (track.isExplicit() && !this.displayExplicitTracks) {
       return null;
     }
 
-    HorizontalAlignment alignment;
-    if (receivedBroadcast.icon == null || !this.displayTrackCover) {
-      alignment = HorizontalAlignment.CENTER;
-    } else {
-      alignment = HorizontalAlignment.LEFT;
-    }
-
-    this.receivedBroadcast = receivedBroadcast;
-
-    //this shouldn't be happening as BroadcastController#get checks for this. But as all track information is being loaded async, it can still happen.
-    Component component = receivedBroadcast.component;
+    Component component = track.getComponent();
     if (component == null) {
       return null;
     }
 
+    HorizontalAlignment alignment = track.getIcon() == null || !this.displayTrackCover
+        ? HorizontalAlignment.CENTER
+        : HorizontalAlignment.LEFT;
     return RenderableComponent.of(component, alignment);
   }
 
@@ -136,13 +125,48 @@ public class SpotifyListeningTag extends NameTag {
 
     float textX = x;
 
-    Icon icon = this.receivedBroadcast == null ? null : this.receivedBroadcast.icon;
-    if (icon != null && this.displayTrackCover) {
-      this.renderPipeline.renderSeeThrough(this.entity, () -> {
-        icon.render(stack, x + 1, y + 1, height - 2);
-      });
+    SharedTrack track = this.controller.getTrackOf(this.entity.getUniqueId());
+    if (track != null && this.displayTrackCover) {
+      Icon icon = track.getIcon();
 
-      textX += height + 1;
+      if (icon != null) {
+        this.renderPipeline.renderSeeThrough(this.entity, () -> {
+          float size = height - 2;
+          float iconX = x + 1;
+          float iconY = y + 1;
+          float progressY = iconY + size - 1;
+
+          // Render the track cover icon
+          icon.render(stack, iconX, iconY, size);
+
+          // Render the progress bar
+          double progress = track.getDaemonProgress();
+          if (progress > 0) {
+            int progressHeight = 1;
+            stack.push();
+            Laby.labyAPI().gfxRenderPipeline().gfx().disableDepth();
+            this.rectangleRenderer.renderRectangle(
+                stack,
+                iconX,
+                progressY,
+                iconX + size,
+                progressY + progressHeight,
+                0xFF333333
+            );
+            this.rectangleRenderer.renderRectangle(
+                stack,
+                iconX,
+                progressY,
+                (float) (iconX + size * progress),
+                progressY + progressHeight,
+                0xFF00FF00
+            );
+            stack.pop();
+          }
+        });
+
+        textX += height + 1;
+      }
     }
 
     super.renderText(stack, component, discrete, textColor, 0, textX, y + 1);
@@ -155,11 +179,7 @@ public class SpotifyListeningTag extends NameTag {
 
   @Override
   public float getWidth() {
-    if (this.receivedBroadcast.icon == null || !this.displayTrackCover) {
-      return super.getWidth();
-    }
-
-    return super.getWidth() + this.getHeight();
+    return super.getWidth() + (this.displayTrackCover ? this.getHeight() : 0);
   }
 
   @Override
