@@ -32,6 +32,7 @@ import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.SpotifyConfiguration;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
+import net.labymod.addons.spotify.core.events.SpotifyPositionChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
 import net.labymod.api.Laby;
 import net.labymod.api.client.session.Session;
@@ -58,8 +59,6 @@ public class TrackSharingController {
   private final OpenSpotifyAPI openApi;
   private final SpotifyConfiguration config;
   private final SpotifyAddon spotifyAddon;
-
-  private String previousBroadcastTrackId = null;
 
   public TrackSharingController(
       OpenSpotifyAPI openApi,
@@ -90,19 +89,13 @@ public class TrackSharingController {
           && this.config.enabled().get()
           && this.config.shareTracks().get();
 
-      String trackId = visible ? track.getId() : null;
-      if (Objects.equals(trackId, this.previousBroadcastTrackId)) {
-        return; // Already sent this track ID
-      }
-
       JsonObject jsonObject = new JsonObject();
-      jsonObject.addProperty("trackId", trackId);
+      jsonObject.addProperty("trackId", visible ? track.getId() : null);
       jsonObject.addProperty("position", spotifyAPI.getPosition());
 
       LabyConnectSession session = Laby.labyAPI().labyConnect().getSession();
       if (session != null && session.isAuthenticated()) {
         session.sendBroadcastPayload("spotify-track-sharing", jsonObject);
-        this.previousBroadcastTrackId = visible ? track.getId() : null;
       }
     });
   }
@@ -160,6 +153,11 @@ public class TrackSharingController {
   }
 
   @Subscribe
+  public void onSpotifyPositionChanged(SpotifyPositionChangedEvent event) {
+    this.broadcastCurrentTrack();
+  }
+
+  @Subscribe
   public void onBroadcastReceive(LabyConnectBroadcastEvent event) {
     @Nullable Session session = Laby.labyAPI().minecraft().sessionAccessor().getSession();
     boolean isSelf = session != null && Objects.equals(session.getUniqueId(), event.getSender());
@@ -208,7 +206,6 @@ public class TrackSharingController {
   public void onWorldLeave(WorldLeaveEvent event) {
     // Clear all shared tracks when leaving the world
     this.sharedTracks.clear();
-    this.previousBroadcastTrackId = null;
   }
 
   public boolean hasTrack(UUID uniqueId) {

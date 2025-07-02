@@ -23,6 +23,7 @@ import de.labystudio.spotifyapi.model.Track;
 import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
+import net.labymod.addons.spotify.core.events.SpotifyPositionChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
 import net.labymod.addons.spotify.core.util.ReconnectDelay;
 import net.labymod.api.LabyAPI;
@@ -51,7 +52,8 @@ public class SpotifyApiListener implements SpotifyListener {
 
   @Override
   public void onPositionChanged(int position) {
-    // not needed
+    Track track = this.spotifyAPI.getTrack();
+    this.labyAPI.eventBus().fire(new SpotifyPositionChangedEvent(track, position));
   }
 
   @Override
