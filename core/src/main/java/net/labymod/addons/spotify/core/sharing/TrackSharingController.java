@@ -27,6 +27,7 @@ import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.SpotifyConfiguration;
@@ -35,6 +36,7 @@ import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPositionChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
 import net.labymod.api.Laby;
+import net.labymod.api.client.entity.player.Player;
 import net.labymod.api.client.session.Session;
 import net.labymod.api.event.Subscribe;
 import net.labymod.api.event.client.network.playerinfo.PlayerInfoRemoveEvent;
@@ -91,7 +93,7 @@ public class TrackSharingController {
 
       JsonObject jsonObject = new JsonObject();
       jsonObject.addProperty("trackId", visible ? track.getId() : null);
-      jsonObject.addProperty("position", spotifyAPI.getPosition());
+      jsonObject.addProperty("position", spotifyAPI.hasPosition() ? spotifyAPI.getPosition() : -1);
 
       LabyConnectSession session = Laby.labyAPI().labyConnect().getSession();
       if (session != null && session.isAuthenticated()) {
@@ -191,6 +193,11 @@ public class TrackSharingController {
       if (primitive.isNumber()) {
         position = primitive.getAsInt();
       }
+    }
+
+    Optional<Player> player = Laby.labyAPI().minecraft().clientWorld().getPlayer(event.getSender());
+    if (player != null && player.isPresent()) {
+      System.out.println(player.get().getName() + ": " + payload.toString());
     }
 
     this.updateTrackOf(event.getSender(), trackId, position);

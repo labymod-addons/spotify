@@ -25,7 +25,7 @@ import net.labymod.api.util.io.web.request.Response;
 
 public class HttpSecretProvider implements SecretProvider {
 
-  private static final String URL_SECRET_STORAGE = "https://laby.net/api/v3/spotify/totp-secret?format=1";
+  private static final String URL_SECRET_STORAGE = "https://laby.net/api/v3/spotify/totpSecret?format=1";
 
   private boolean updateRequired = false;
 

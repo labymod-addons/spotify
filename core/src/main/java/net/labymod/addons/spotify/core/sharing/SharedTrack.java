@@ -27,6 +27,7 @@ import net.labymod.addons.spotify.core.util.TrackUtil;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.icon.Icon;
+import net.labymod.api.client.session.Session;
 import net.labymod.api.util.Debounce;
 import net.labymod.api.util.math.MathHelper;
 import net.labymod.api.util.time.TimeUtil;
@@ -38,6 +39,7 @@ public class SharedTrack {
 
   private final String trackId;
   private final UUID userId;
+  private final boolean isSelf;
 
   private boolean resolveRequired = true;
   private OpenTrack openTrack;
@@ -51,6 +53,9 @@ public class SharedTrack {
     this.openApi = openApi;
     this.userId = userId;
     this.trackId = trackId;
+
+    Session session = Laby.labyAPI().minecraft().sessionAccessor().getSession();
+    this.isSelf = session != null && session.getUniqueId().equals(userId);
   }
 
   public void updatePosition(int position) {
@@ -74,7 +79,7 @@ public class SharedTrack {
     }
 
     long elapsedTime = TimeUtil.getCurrentTimeMillis() - this.timeLastPositionUpdated
-        + RESOLVE_DELAY + BROADCAST_DELAY;
+        + this.getResolveDelay() + BROADCAST_DELAY;
     double progress = (this.position + elapsedTime) / (double) maxPosition;
     return MathHelper.clamp(progress, 0, 1);
   }
@@ -105,7 +110,7 @@ public class SharedTrack {
   private void resolve() {
     this.resolveRequired = false;
 
-    Debounce.of("spotifyResolve:" + this.userId.toString(), RESOLVE_DELAY, () -> {
+    Debounce.of("spotifyResolve:" + this.userId.toString(), this.getResolveDelay(), () -> {
       this.openApi.requestOpenTrackAsync(this.trackId, resolvedTrack -> {
         if (resolvedTrack == null) {
           return;
@@ -141,5 +146,9 @@ public class SharedTrack {
         });
       });
     });
+  }
+
+  private long getResolveDelay() {
+    return this.isSelf ? 100 : RESOLVE_DELAY;
   }
 }
