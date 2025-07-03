@@ -4,7 +4,7 @@ dependencies {
     labyProcessor()
     api(project(":api"))
 
-    addonMavenDependency("com.github.LabyStudio:java-spotify-api:1.4.1") {
+    addonMavenDependency("com.github.LabyStudio:java-spotify-api:1.4.2") {
         exclude("com.google.code.gson")
         exclude("net.java.dev.jna")
     }
