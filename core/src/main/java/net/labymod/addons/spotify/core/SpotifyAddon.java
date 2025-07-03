@@ -28,6 +28,7 @@ import net.labymod.addons.spotify.core.labymod.interaction.SpotifyTrackBulletPoi
 import net.labymod.addons.spotify.core.labymod.nametag.SpotifySharedTrack;
 import net.labymod.addons.spotify.core.sharing.TrackSharingController;
 import net.labymod.addons.spotify.core.util.ReconnectDelay;
+import net.labymod.api.Constants.Files;
 import net.labymod.api.addon.LabyAddon;
 import net.labymod.api.client.entity.player.interaction.InteractionMenuRegistry;
 import net.labymod.api.client.entity.player.tag.PositionType;
@@ -103,6 +104,7 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
         new de.labystudio.spotifyapi.config.SpotifyConfiguration.Builder()
             .autoReconnect(false)
             .exceptionReconnectDelay(reconnectDelay.getDelay())
+            .nativesDirectory(Files.NATIVES.resolve("spotify"))
             .build()
     );
   }
