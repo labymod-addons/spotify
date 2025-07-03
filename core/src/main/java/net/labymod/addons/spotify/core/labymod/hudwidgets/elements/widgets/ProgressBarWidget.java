@@ -24,6 +24,7 @@ import net.labymod.api.client.gui.screen.ScreenContext;
 import net.labymod.api.client.gui.screen.widget.SimpleWidget;
 import net.labymod.api.client.gui.screen.widget.attributes.bounds.Bounds;
 import net.labymod.api.client.render.draw.RectangleRenderer;
+import net.labymod.api.util.math.MathHelper;
 
 @AutoWidget
 public class ProgressBarWidget extends SimpleWidget {
@@ -45,6 +46,7 @@ public class ProgressBarWidget extends SimpleWidget {
     if (this.spotifyAPI.hasPosition()) {
       float progress =
           1.0F / this.spotifyAPI.getTrack().getLength() * this.spotifyAPI.getPosition();
+      progress = MathHelper.clamp(progress, 0, 1);
       Bounds bounds = this.bounds();
       RECTANGLE_RENDERER
           .pos(bounds.getLeft(), bounds.getTop())
