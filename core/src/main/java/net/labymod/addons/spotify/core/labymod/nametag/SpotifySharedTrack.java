@@ -144,7 +144,7 @@ public class SpotifySharedTrack extends NameTag {
           if (progress > 0) {
             int progressHeight = 1;
             stack.push();
-            Laby.labyAPI().gfxRenderPipeline().gfx().disableDepth();
+            stack.translate(0, 0, 0.003F);
             this.rectangleRenderer.renderRectangle(
                 stack,
                 iconX,
@@ -153,6 +153,7 @@ public class SpotifySharedTrack extends NameTag {
                 progressY + progressHeight,
                 0xFF333333
             );
+            stack.translate(0, 0, 0.003F);
             this.rectangleRenderer.renderRectangle(
                 stack,
                 iconX,
