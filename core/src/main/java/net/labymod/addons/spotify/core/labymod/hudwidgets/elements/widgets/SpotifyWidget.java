@@ -98,7 +98,6 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     this.addId(leftAligned ? "left" : "right");
 
     this.coverWidget = new IconWidget(this.hudWidget.getIcon());
-    this.coverWidget.setCleanupOnDispose(true);
     this.coverWidget.addId("cover");
 
     if (!maximize) {

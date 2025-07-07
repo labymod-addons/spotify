@@ -22,6 +22,7 @@ import de.labystudio.spotifyapi.open.model.track.Image;
 import de.labystudio.spotifyapi.open.model.track.OpenTrack;
 import java.awt.image.BufferedImage;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Consumer;
 import net.labymod.addons.spotify.core.Textures;
 import net.labymod.api.Laby;
@@ -38,7 +39,14 @@ import net.labymod.api.client.resources.texture.TextureRepository.TextureRegistr
 public class TrackUtil {
 
   private static final Cache<Icon> ICON_CACHE = new Cache<>(100, icon -> {
+    ResourceLocation resourceLocation = icon.getResourceLocation();
+    if (Objects.equals(resourceLocation, Textures.ICON_TEXTURE)) {
+      return; // Don't release the default icon texture
+    }
 
+    Laby.references()
+        .textureRepository()
+        .queueTextureRelease(resourceLocation);
   });
 
   public static synchronized Icon createIcon(
