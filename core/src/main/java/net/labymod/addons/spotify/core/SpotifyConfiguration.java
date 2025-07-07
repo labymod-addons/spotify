@@ -36,7 +36,7 @@ public class SpotifyConfiguration extends AddonConfig {
         }
 
         if (newValue) {
-          spotifyAddon.initializeSpotifyAPI();
+          spotifyAddon.initializeSpotifyAndResetDelay();
         } else {
           spotifyAddon.disconnect();
         }

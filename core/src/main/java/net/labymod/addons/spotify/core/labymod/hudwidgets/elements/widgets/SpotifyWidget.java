@@ -16,16 +16,14 @@
 
 package net.labymod.addons.spotify.core.labymod.hudwidgets.elements.widgets;
 
-import static net.labymod.addons.spotify.core.util.TrackUtil.getSmallestImage;
-
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.model.MediaKey;
 import de.labystudio.spotifyapi.model.Track;
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
-import de.labystudio.spotifyapi.open.model.track.Image;
 import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.Textures.SpriteControls;
 import net.labymod.addons.spotify.core.labymod.hudwidgets.SpotifyHudWidget;
+import net.labymod.addons.spotify.core.util.TrackUtil;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.hud.hudwidget.HudWidget.Updatable;
@@ -38,7 +36,6 @@ import net.labymod.api.client.gui.screen.widget.widgets.DivWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.VerticalListWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.renderer.IconWidget;
-import net.labymod.api.client.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 @AutoWidget
@@ -52,7 +49,6 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   private final SpotifyHudWidget hudWidget;
   private final SpotifyAPI spotifyAPI;
   private final boolean editorContext;
-  private final boolean chatOpen;
   private ComponentWidget trackWidget;
   private ComponentWidget artistWidget;
   private IconWidget coverWidget;
@@ -71,11 +67,18 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     this.hudWidget = hudWidget;
     this.editorContext = editorContext;
     this.spotifyAPI = this.hudWidget.spotifyAPI();
-    this.chatOpen = !Laby.references().chatAccessor().isChatOpen();
 
     boolean hasTrack = this.spotifyAPI.hasTrack() && this.spotifyAPI.hasPosition();
     this.setVariable(PROGRESS_VISIBLE_KEY, hasTrack);
     this.setVariable(LARGE_PROGRESS_VISIBLE_KEY, hasTrack);
+
+    this.setPressable(() -> {
+      // Retry
+      if (!this.spotifyAPI.isConnected()) {
+        this.artistWidget.setVisible(false);
+        this.hudWidget.addon().initializeSpotifyAndResetDelay();
+      }
+    });
   }
 
   @Override
@@ -249,44 +252,30 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
   }
 
   private void updateTrack(Track track) {
-    if (track == null || this.trackWidget == null || this.artistWidget == null) {
+    if (this.trackWidget == null || this.artistWidget == null) {
       return;
     }
 
-    this.trackWidget.setComponent(Component.text(track.getName()));
-    this.artistWidget.setComponent(Component.text(track.getArtist()));
+    this.trackWidget.setComponent(Component.text(track == null ? "Not playing" : track.getName()));
+    this.artistWidget.setComponent(
+        Component.text(track == null ? "Click to retry" : track.getArtist())
+    );
+
+    this.artistWidget.setVisible(true);
+
+    if (track == null || track.getLength() <= 0) {
+      this.controlsWidget.setVisible(false);
+      return;
+    }
+
+    this.controlsWidget.setVisible(true);
 
     int length = track.getLength() / 1000;
     String totalTimeDisplay = String.format("%d:%02d", length / 60, length % 60);
     this.totalTimeWidget.setComponent(Component.text(totalTimeDisplay));
 
-    // Request track information from the OpenSpotifyAPI
-    this.openSpotifyAPI.requestOpenTrackAsync(track.getId(), openTrack -> {
-      this.labyAPI.minecraft().executeOnRenderThread(() -> {
-        if (openTrack == null) {
-          // Set fallback icon
-          this.coverWidget.icon().set(this.hudWidget.getIcon());
-          return;
-        }
-
-        // Update artists from API
-        String artists = openTrack.getArtists();
-        if (artists != null) {
-          this.artistWidget.setComponent(Component.text(artists));
-        }
-
-        // Update track icon
-        Image artwork = getSmallestImage(openTrack);
-        if (artwork == null) {
-          // Set fallback icon
-          this.coverWidget.icon().set(this.hudWidget.getIcon());
-        } else {
-          ResourceLocation resource = this.coverWidget.icon().get().getResourceLocation();
-          Icon icon = Icon.url(artwork.url, resource);
-          this.coverWidget.icon().set(icon);
-        }
-      });
-    });
+    Icon icon = TrackUtil.createIcon(this.openSpotifyAPI, track);
+    this.coverWidget.icon().set(icon);
   }
 
   private void pressMediaKey(MediaKey mediaKey) {

@@ -18,7 +18,9 @@ package net.labymod.addons.spotify.core.labymod.hudwidgets;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
+import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
+import net.labymod.addons.spotify.core.events.SpotifyDisconnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
 import net.labymod.addons.spotify.core.labymod.hudwidgets.SpotifyHudWidget.SpotifyHudWidgetConfig;
@@ -40,6 +42,7 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   public static final String COVER_VISIBILITY_REASON = "cover_visibility";
   public static final String CONNECT_REASON = "connect";
 
+  private final SpotifyAddon addon;
   private final OpenSpotifyAPI openSpotifyAPI;
   private final SpotifyAPI spotifyAPI;
   private final Icon hudWidgetIcon;
@@ -47,11 +50,13 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   public SpotifyHudWidget(
       String id,
       Icon icon,
+      SpotifyAddon addon,
       OpenSpotifyAPI openSpotifyAPI,
       SpotifyAPI spotifyAPI
   ) {
     super(id, SpotifyHudWidgetConfig.class);
 
+    this.addon = addon;
     this.hudWidgetIcon = icon;
     this.openSpotifyAPI = openSpotifyAPI;
     this.spotifyAPI = spotifyAPI;
@@ -97,7 +102,18 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
   }
 
   @Subscribe
-  public void onSpotifyConnectEvent(SpotifyConnectEvent event) {
+  public void onSpotifyConnect(SpotifyConnectEvent event) {
+    ThreadSafe.executeOnRenderThread(() -> {
+      if (!this.isEnabled()) {
+        return;
+      }
+
+      this.requestUpdate(CONNECT_REASON);
+    });
+  }
+
+  @Subscribe
+  public void onSpotifyDisconnect(SpotifyDisconnectEvent event) {
     ThreadSafe.executeOnRenderThread(() -> {
       if (!this.isEnabled()) {
         return;
@@ -131,6 +147,10 @@ public class SpotifyHudWidget extends WidgetHudWidget<SpotifyHudWidgetConfig> {
 
   public SpotifyAPI spotifyAPI() {
     return this.spotifyAPI;
+  }
+
+  public SpotifyAddon addon() {
+    return this.addon;
   }
 
   public static class SpotifyHudWidgetConfig extends HudWidgetConfig {

@@ -20,7 +20,6 @@ import static net.labymod.addons.spotify.core.sharing.TrackSharingController.BRO
 import static net.labymod.addons.spotify.core.sharing.TrackSharingController.RESOLVE_DELAY;
 
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
-import de.labystudio.spotifyapi.open.model.track.Image;
 import de.labystudio.spotifyapi.open.model.track.OpenTrack;
 import java.util.UUID;
 import net.labymod.addons.spotify.core.util.TrackUtil;
@@ -117,33 +116,11 @@ public class SharedTrack {
         }
         this.openTrack = resolvedTrack;
 
-        Laby.labyAPI().minecraft().executeOnRenderThread(() -> {
-          // Fetch artwork
-          Image smallestImage = TrackUtil.getSmallestImage(resolvedTrack);
-          if (smallestImage != null) {
-            this.icon = Icon.url(smallestImage.url);
-          }
+        // Artwork
+        this.icon = TrackUtil.createIcon(resolvedTrack);
 
-          // Fetch name
-          String name = resolvedTrack.name;
-          int bracketIndex = name.indexOf("(");
-          if (bracketIndex != -1 && name.indexOf("Remix", bracketIndex) == -1) {
-            name = name.substring(0, bracketIndex);
-          }
-
-          if (name.length() > 32) {
-            name = name.substring(0, 29) + "...";
-          }
-
-          String artist = resolvedTrack.getArtists();
-          if (artist.length() > 32) {
-            artist = artist.substring(0, 29) + "...";
-          }
-
-          String finalName = name.trim();
-          String finalArtist = artist.trim();
-          this.component = Component.text(finalName + "\n" + finalArtist);
-        });
+        // Name and Artist
+        this.component = TrackUtil.getShortTrackNameAndArtist(resolvedTrack);
       });
     });
   }

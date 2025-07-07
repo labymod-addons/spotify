@@ -19,6 +19,7 @@ package net.labymod.addons.spotify.core.labymod.hudwidgets;
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.model.Track;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
+import net.labymod.addons.spotify.core.events.SpotifyDisconnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextHudWidget;
 import net.labymod.api.client.gui.hud.hudwidget.text.TextHudWidgetConfig;
@@ -59,7 +60,12 @@ public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
   }
 
   @Subscribe
-  public void onSpotifyConnectEvent(SpotifyConnectEvent event) {
+  public void onSpotifyConnect(SpotifyConnectEvent event) {
+    this.updateTrack();
+  }
+
+  @Subscribe
+  public void onSpotifyDisconnect(SpotifyDisconnectEvent event) {
     this.updateTrack();
   }
 
@@ -75,8 +81,13 @@ public class SpotifyTextHudWidget extends TextHudWidget<TextHudWidgetConfig> {
 
     if (this.spotifyAPI.isPlaying()) {
       Track track = this.spotifyAPI.getTrack();
-      this.trackLine.updateAndFlush(track.getName());
-      this.artistLine.updateAndFlush(track.getArtist());
+      if (track == null) {
+        this.trackLine.updateAndFlush("Not playing");
+        this.artistLine.updateAndFlush("Not playing");
+      } else {
+        this.trackLine.updateAndFlush(track.getName());
+        this.artistLine.updateAndFlush(track.getArtist());
+      }
     } else {
       this.trackLine.updateAndFlush("Not playing");
       this.artistLine.updateAndFlush("Not playing");

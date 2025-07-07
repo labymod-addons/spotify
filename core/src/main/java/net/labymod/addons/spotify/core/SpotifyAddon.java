@@ -48,6 +48,7 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
   private static SpotifyAddon instance;
   private final SpotifyAPI spotifyAPI;
 
+  private ReconnectDelay reconnectDelay = ReconnectDelay.DEFAULT;
 
   public SpotifyAddon() {
     SpotifyAddon.instance = this;
@@ -61,14 +62,20 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     SpotifyApiListener spotifyApiListener = new SpotifyApiListener(this.spotifyAPI, this);
     this.spotifyAPI.registerListener(spotifyApiListener);
 
-    this.initializeSpotifyAPI();
+    this.initializeSpotifyAndResetDelay();
 
     SecretProvider secretProvider = new HttpSecretProvider();
     OpenSpotifyAPI openApi = new OpenSpotifyAPI(secretProvider);
 
     HudWidgetRegistry registry = this.labyAPI().hudWidgetRegistry();
     registry.register(new SpotifyTextHudWidget("spotify_track", this.hudIcon, this.spotifyAPI));
-    registry.register(new SpotifyHudWidget("spotify", this.hudIcon, openApi, this.spotifyAPI));
+    registry.register(new SpotifyHudWidget(
+        "spotify",
+        this.hudIcon,
+        this,
+        openApi,
+        this.spotifyAPI
+    ));
 
     TrackSharingController controller = new TrackSharingController(openApi, this);
     this.labyAPI().eventBus().registerListener(controller);
@@ -83,16 +90,16 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     );
   }
 
-  public void initializeSpotifyAPI() {
-    this.initializeSpotifyAPI(ReconnectDelay.DEFAULT, true);
+  public void initializeSpotifyAndResetDelay() {
+    this.setReconnectDelay(ReconnectDelay.DEFAULT);
+    this.initializeSpotifyAndResetDelay(true);
   }
 
-  public void initializeSpotifyAPI(ReconnectDelay reconnectDelay, boolean ignoreInitialized) {
+  public void initializeSpotifyAndResetDelay(boolean force) {
     if (this.spotifyAPI.isInitialized()) {
-      if (!ignoreInitialized) {
+      if (!force) {
         return;
       }
-
       this.spotifyAPI.stop();
     }
 
@@ -103,7 +110,7 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     this.spotifyAPI.initializeAsync(
         new de.labystudio.spotifyapi.config.SpotifyConfiguration.Builder()
             .autoReconnect(false)
-            .exceptionReconnectDelay(reconnectDelay.getDelay())
+            .exceptionReconnectDelay(this.reconnectDelay.getDelay())
             .nativesDirectory(Files.NATIVES.resolve("spotify"))
             .build()
     );
@@ -113,6 +120,14 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     if (this.spotifyAPI.isInitialized()) {
       this.spotifyAPI.stop();
     }
+  }
+
+  public void setReconnectDelay(ReconnectDelay reconnectDelay) {
+    this.reconnectDelay = reconnectDelay;
+  }
+
+  public void bumpReconnectDelay() {
+    this.reconnectDelay = this.reconnectDelay.next();
   }
 
   public SpotifyAPI getSpotifyAPI() {

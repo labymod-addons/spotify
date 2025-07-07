@@ -31,6 +31,7 @@ import java.util.UUID;
 import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.SpotifyConfiguration;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
+import net.labymod.addons.spotify.core.events.SpotifyDisconnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPositionChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
@@ -139,6 +140,11 @@ public class TrackSharingController {
 
   @Subscribe
   public void onSpotifyConnect(SpotifyConnectEvent event) {
+    this.broadcastCurrentTrack();
+  }
+
+  @Subscribe
+  public void onSpotifyDisconnect(SpotifyDisconnectEvent event) {
     this.broadcastCurrentTrack();
   }
 

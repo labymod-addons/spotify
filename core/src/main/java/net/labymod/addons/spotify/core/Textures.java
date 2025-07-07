@@ -24,6 +24,11 @@ import net.labymod.api.client.resources.texture.ThemeTextureLocation;
 
 public class Textures {
 
+  public static final ThemeTextureLocation ICON_TEXTURE = of(
+      "spotify:controls/settings/hud/spotify32",
+      32, 32
+  );
+
   public static class SpriteControls {
 
     public static final ThemeTextureLocation TEXTURE = of("spotify:controls", 20, 20);

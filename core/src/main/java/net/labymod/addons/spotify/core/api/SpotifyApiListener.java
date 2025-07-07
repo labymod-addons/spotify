@@ -18,10 +18,10 @@ package net.labymod.addons.spotify.core.api;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.SpotifyListener;
-import de.labystudio.spotifyapi.config.SpotifyConfiguration;
 import de.labystudio.spotifyapi.model.Track;
 import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.events.SpotifyConnectEvent;
+import net.labymod.addons.spotify.core.events.SpotifyDisconnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPositionChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
@@ -54,6 +54,10 @@ public class SpotifyApiListener implements SpotifyListener {
   public void onPositionChanged(int position) {
     Track track = this.spotifyAPI.getTrack();
     this.labyAPI.eventBus().fire(new SpotifyPositionChangedEvent(track, position));
+
+    if (position > 0) {
+      this.spotifyAddon.setReconnectDelay(ReconnectDelay.DEFAULT);
+    }
   }
 
   @Override
@@ -69,9 +73,9 @@ public class SpotifyApiListener implements SpotifyListener {
 
   @Override
   public void onDisconnect(Exception exception) {
-    SpotifyConfiguration configuration = this.spotifyAPI.getConfiguration();
-    ReconnectDelay next = ReconnectDelay.of(configuration.getExceptionReconnectDelay()).next();
+    this.labyAPI.eventBus().fire(new SpotifyDisconnectEvent());
 
-    this.spotifyAddon.initializeSpotifyAPI(next, true);
+    this.spotifyAddon.bumpReconnectDelay();
+    this.spotifyAddon.initializeSpotifyAndResetDelay(true);
   }
 }
