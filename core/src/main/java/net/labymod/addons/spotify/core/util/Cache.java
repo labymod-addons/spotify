@@ -39,7 +39,7 @@ public class Cache<T> {
 
   public boolean has(String key) {
     CacheEntry<T> entry = this.cache.get(key);
-    if (entry != null && !entry.isExpired()) {
+    if (entry != null) {
       entry.updateAccessTime();
       return true;
     }
@@ -48,7 +48,7 @@ public class Cache<T> {
 
   public T get(String key) {
     CacheEntry<T> entry = this.cache.get(key);
-    if (entry != null && !entry.isExpired()) {
+    if (entry != null) {
       entry.updateAccessTime();
       return entry.value;
     }
