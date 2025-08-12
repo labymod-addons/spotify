@@ -262,7 +262,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
 
     this.artistWidget.setVisible(true);
 
-    if (track == null || track.getLength() <= 0) {
+    if (track == null || track.getLength() <= 0 || !TrackUtil.isTrackIdValid(track.getId())) {
       this.controlsWidget.setVisible(false);
       return;
     }

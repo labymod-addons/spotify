@@ -35,6 +35,7 @@ import net.labymod.addons.spotify.core.events.SpotifyDisconnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPositionChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
+import net.labymod.addons.spotify.core.util.TrackUtil;
 import net.labymod.api.Laby;
 import net.labymod.api.client.session.Session;
 import net.labymod.api.event.Subscribe;
@@ -88,7 +89,8 @@ public class TrackSharingController {
       boolean visible = track != null
           && spotifyAPI.isPlaying()
           && this.config.enabled().get()
-          && this.config.shareTracks().get();
+          && this.config.shareTracks().get()
+          && TrackUtil.isTrackIdValid(track.getId());
 
       JsonObject jsonObject = new JsonObject();
       jsonObject.addProperty("trackId", visible ? track.getId() : null);

@@ -17,19 +17,16 @@
 package net.labymod.addons.spotify.core.labymod.hudwidgets.elements.widgets;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
-import net.labymod.api.Laby;
 import net.labymod.api.client.gui.lss.property.LssProperty;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.ScreenContext;
 import net.labymod.api.client.gui.screen.widget.SimpleWidget;
 import net.labymod.api.client.gui.screen.widget.attributes.bounds.Bounds;
-import net.labymod.api.client.render.draw.RectangleRenderer;
+import net.labymod.api.util.bounds.Rectangle;
 import net.labymod.api.util.math.MathHelper;
 
 @AutoWidget
 public class ProgressBarWidget extends SimpleWidget {
-
-  private static final RectangleRenderer RECTANGLE_RENDERER = Laby.references().rectangleRenderer();
 
   private final SpotifyAPI spotifyAPI;
 
@@ -48,11 +45,14 @@ public class ProgressBarWidget extends SimpleWidget {
           1.0F / this.spotifyAPI.getTrack().getLength() * this.spotifyAPI.getPosition();
       progress = MathHelper.clamp(progress, 0, 1);
       Bounds bounds = this.bounds();
-      RECTANGLE_RENDERER
-          .pos(bounds.getLeft(), bounds.getTop())
-          .size(bounds.getWidth() * progress, bounds.getHeight())
-          .color(this.foregroundColor.get())
-          .render(context.stack());
+
+      context.canvas().submitRect(
+          Rectangle.relative(
+              bounds.getLeft(), bounds.getTop(),
+              bounds.getWidth() * progress, bounds.getHeight()
+          ),
+          this.foregroundColor.get()
+      );
     }
   }
 

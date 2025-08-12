@@ -76,7 +76,7 @@ public class TrackUtil {
       GameImage gameImage = Laby.references()
           .gameImageProvider()
           .getImage(coverArt);
-      SimpleTexture texture = new SimpleTexture(resourceLocation, gameImage);
+      SimpleTexture texture = SimpleTexture.simple(resourceLocation, gameImage);
       texture.bindTo(new TextureRegistrationCallback() {
         @Override
         public void onBeforeTextureRegistration() {
