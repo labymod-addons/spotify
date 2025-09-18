@@ -114,6 +114,9 @@ public class SpotifySharedTrack extends NameTag {
   ) {
     float width = this.getWidth();
     float height = this.getHeight();
+
+    stack.push();
+    stack.translate(0, 0, -0.03F);
     this.rectangleRenderer.renderRectangle(
         stack,
         x,
@@ -122,6 +125,7 @@ public class SpotifySharedTrack extends NameTag {
         height,
         backgroundColor
     );
+    stack.pop();
 
     float textX = x;
 
