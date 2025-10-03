@@ -1,1 +1,29 @@
-{}
+{
+    "spotify": {
+        "hudWidget": {
+            "spotify": {
+                "name": "Spotify",
+                "minimizeIngame": {
+                    "name": "Minimer I Spillet"
+                }
+            },
+            "spotify_track": {
+                "name": "Spotify Nummer"
+            }
+        },
+        "bulletPoint": {
+            "open": {
+                "name": "Åbn Nuværende Sang i Spotify"
+            }
+        },
+        "settings": {
+            "name": "Spotify",
+            "enabled": {
+                "name": "Aktiveret"
+            },
+            "shareTracks": {
+                "name": "Del Nuværende Sang"
+            }
+        }
+    }
+}
