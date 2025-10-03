@@ -1,1 +1,9 @@
-{}
+{
+    "spotify": {
+        "hudWidget": {
+            "spotify": {
+                "name": "Spotify"
+            }
+        }
+    }
+}
