@@ -3,6 +3,9 @@
         "hudWidget": {
             "spotify": {
                 "name": "Spotify"
+            },
+            "spotify_track": {
+                "name": "Faixa do Spotify"
             }
         },
         "settings": {
