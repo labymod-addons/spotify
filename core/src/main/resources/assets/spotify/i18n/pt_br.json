@@ -4,6 +4,12 @@
             "spotify": {
                 "name": "Spotify"
             }
+        },
+        "settings": {
+            "enabled": {
+                "name": "Ativado"
+            },
+            "name": "Spotify"
         }
     }
 }
