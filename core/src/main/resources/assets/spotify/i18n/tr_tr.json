@@ -23,7 +23,8 @@
         },
         "settings": {
             "displayTrackCover": {
-                "description": "Mevcut şarkının kapağını görüntüle"
+                "description": "Mevcut şarkının kapağını görüntüle",
+                "name": "Şarkı Kapağını Göster"
             },
             "displayExplicitTracks": {
                 "name": "Açık Şarkıları Göster",
@@ -33,6 +34,18 @@
                 "sharing": {
                     "name": "Şarkı Paylaşımı (Deneysel)"
                 }
+            },
+            "name": "Spotify",
+            "enabled": {
+                "name": "Aktif"
+            },
+            "displayTracks": {
+                "name": "Paylaşılan Şarkıları Göster",
+                "description": "Spotify eklentisini kullanarak sizinle diğer oyuncular arasında paylaşılan şarkıları göster"
+            },
+            "shareTracks": {
+                "name": "Şu Anki Şarkıyı Paylaş",
+                "description": "Spotify eklentisini kullanarak şu anda dinlediğiniz şarkıyı diğer oyuncularla paylaşın"
             }
         }
     }
