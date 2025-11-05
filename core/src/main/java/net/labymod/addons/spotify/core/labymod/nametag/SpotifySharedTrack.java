@@ -206,7 +206,6 @@ public class SpotifySharedTrack extends ComponentNameTag {
     return super.getHeight();
   }
 
-
   static class ColoredRectangle implements CustomGeometryRenderer {
 
     private final float left;
