@@ -13,11 +13,15 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package net.labymod.addons.spotify.core.events;
+package net.labymod.addons.spotify.core.labymod.snapshot;
 
-import net.labymod.api.event.Event;
+import net.labymod.api.laby3d.renderer.snapshot.ExtraKey;
 
-public class SpotifyConnectEvent implements Event {
+public final class SpotifyExtraKeys {
+
+  public static final ExtraKey<SpotifyUserSnapshot> SPOTIFY_USER = ExtraKey.of(
+      "spotify_user",
+      SpotifyUserSnapshot.class
+  );
 
 }
-

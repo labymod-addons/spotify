@@ -13,7 +13,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
 package net.labymod.addons.spotify.core;
 
 import de.labystudio.spotifyapi.SpotifyAPI;
@@ -48,6 +47,7 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
   private static SpotifyAddon instance;
   private final SpotifyAPI spotifyAPI;
 
+  private TrackSharingController controller;
   private ReconnectDelay reconnectDelay = ReconnectDelay.DEFAULT;
 
   public SpotifyAddon() {
@@ -77,16 +77,16 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
         this.spotifyAPI
     ));
 
-    TrackSharingController controller = new TrackSharingController(openApi, this);
-    this.labyAPI().eventBus().registerListener(controller);
+    this.controller = new TrackSharingController(openApi, this);
+    this.labyAPI().eventBus().registerListener(this.controller);
 
     InteractionMenuRegistry menuRegistry = this.labyAPI().interactionMenuRegistry();
-    menuRegistry.register(new SpotifyTrackBulletPoint(this, controller));
+    menuRegistry.register(new SpotifyTrackBulletPoint(this, this.controller));
 
     this.labyAPI().tagRegistry().register(
         "spotify_shared_track",
         PositionType.BELOW_NAME,
-        new SpotifySharedTrack(this.configuration(), controller)
+        new SpotifySharedTrack(this.configuration())
     );
   }
 
@@ -137,6 +137,10 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
   @Override
   protected Class<SpotifyConfiguration> configurationClass() {
     return SpotifyConfiguration.class;
+  }
+
+  public TrackSharingController getController() {
+    return this.controller;
   }
 
   public static SpotifyAddon get() {

@@ -13,7 +13,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
 package net.labymod.addons.spotify.core.sharing;
 
 import static net.labymod.addons.spotify.core.sharing.TrackSharingController.BROADCAST_DELAY;
@@ -21,6 +20,8 @@ import static net.labymod.addons.spotify.core.sharing.TrackSharingController.RES
 
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import de.labystudio.spotifyapi.open.model.track.OpenTrack;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import net.labymod.addons.spotify.core.util.TrackUtil;
 import net.labymod.api.Laby;
@@ -42,7 +43,7 @@ public class SharedTrack {
 
   private boolean resolveRequired = true;
   private OpenTrack openTrack;
-  private Component component;
+  private List<Component> components = Collections.emptyList();
   private Icon icon;
 
   private int position = 0;
@@ -71,7 +72,7 @@ public class SharedTrack {
       this.resolve();
     }
 
-    Integer maxPosition = this.openTrack.durationMs;
+    Integer maxPosition = this.openTrack == null ? null : this.openTrack.durationMs;
     if (maxPosition == null || maxPosition <= 0
         || this.position <= 0 || this.position > maxPosition) {
       return 0;
@@ -91,12 +92,11 @@ public class SharedTrack {
     return this.icon;
   }
 
-  @Nullable
-  public Component getComponent() {
+  public List<Component> getComponents() {
     if (this.resolveRequired) {
       this.resolve();
     }
-    return this.component;
+    return this.components;
   }
 
   public boolean isExplicit() {
@@ -120,7 +120,7 @@ public class SharedTrack {
         this.icon = TrackUtil.createIcon(resolvedTrack);
 
         // Name and Artist
-        this.component = TrackUtil.getShortTrackNameAndArtist(resolvedTrack);
+        this.components = TrackUtil.getShortTrackNameAndArtist(resolvedTrack);
       });
     });
   }

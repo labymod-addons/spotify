@@ -1,9 +1,10 @@
+import com.diffplug.spotless.LineEnding
 import net.labymod.labygradle.common.extension.model.labymod.ReleaseChannels
 
 plugins {
     id("net.labymod.labygradle")
     id("net.labymod.labygradle.addon")
-    id("org.cadixdev.licenser") version ("0.6.1")
+    id("com.diffplug.spotless") version ("8.0.0")
 }
 
 val versions = providers.gradleProperty("net.labymod.minecraft-versions").get().split(";")
@@ -18,8 +19,7 @@ labyMod {
         registerVersion(versions.toTypedArray()) {
             runs {
                 getByName("client") {
-                    // When the property is set to true, you can log in with a Minecraft account
-                    // devLogin = true
+                    devLogin = true
                 }
             }
         }
@@ -31,14 +31,14 @@ labyMod {
         author = "LabyMedia GmbH"
         minecraftVersion = "*"
         version = rootProject.version.toString()
-        releaseChannel = ReleaseChannels.INTERNAL
+        releaseChannel = ReleaseChannels.SNAPSHOT
     }
 }
 
 subprojects {
     plugins.apply("net.labymod.labygradle")
     plugins.apply("net.labymod.labygradle.addon")
-    plugins.apply("org.cadixdev.licenser")
+    plugins.apply("com.diffplug.spotless")
 
     group = rootProject.group
     version = rootProject.version
@@ -47,8 +47,11 @@ subprojects {
         maven { url = uri("https://jitpack.io") }
     }
 
-    license {
-        header(rootProject.file("gradle/LICENSE-HEADER.txt"))
-        newLine.set(true)
+    spotless {
+        lineEndings = LineEnding.UNIX
+
+        java {
+            licenseHeaderFile(rootProject.file("gradle/LICENSE-HEADER.txt"))
+        }
     }
 }

@@ -13,7 +13,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
 package net.labymod.addons.spotify.core.util;
 
 import de.labystudio.spotifyapi.model.Track;
@@ -21,6 +20,7 @@ import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import de.labystudio.spotifyapi.open.model.track.Image;
 import de.labystudio.spotifyapi.open.model.track.OpenTrack;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -147,7 +147,7 @@ public class TrackUtil {
     textureRepository.getOrRegisterTexture(details);
   }
 
-  public static Component getShortTrackNameAndArtist(OpenTrack openTrack) {
+  public static List<Component> getShortTrackNameAndArtist(OpenTrack openTrack) {
     String name = openTrack.name;
     int bracketIndex = name.indexOf("(");
     if (bracketIndex != -1 && name.indexOf("Remix", bracketIndex) == -1) {
@@ -166,7 +166,7 @@ public class TrackUtil {
     String finalName = name.trim();
     String finalArtist = artist.trim();
 
-    return Component.text(finalName + "\n" + finalArtist);
+    return List.of(Component.text(finalName), Component.text(finalArtist));
   }
 
   public static Image getSmallestImage(OpenTrack openTrack) {
