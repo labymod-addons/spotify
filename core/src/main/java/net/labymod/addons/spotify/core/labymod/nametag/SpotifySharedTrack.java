@@ -204,6 +204,11 @@ public class SpotifySharedTrack extends ComponentNameTag {
     return super.getHeight();
   }
 
+  @Override
+  public boolean isDiscrete(EntitySnapshot snapshot) {
+    return true;
+  }
+
   static class ColoredRectangle implements CustomGeometryRenderer {
 
     private final float left;
