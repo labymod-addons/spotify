@@ -16,7 +16,9 @@
 package net.labymod.addons.spotify.core.labymod.snapshot;
 
 import net.labymod.addons.spotify.core.SpotifyAddon;
+import net.labymod.addons.spotify.core.SpotifyConfiguration;
 import net.labymod.addons.spotify.core.sharing.SharedTrack;
+import net.labymod.addons.spotify.core.sharing.TrackSharingController;
 import net.labymod.api.client.entity.player.Player;
 import net.labymod.api.laby3d.renderer.snapshot.AbstractLabySnapshot;
 import net.labymod.api.laby3d.renderer.snapshot.Extras;
@@ -25,13 +27,38 @@ import org.jetbrains.annotations.Nullable;
 public class SpotifyUserSnapshot extends AbstractLabySnapshot {
 
   private final SharedTrack track;
+  private final boolean displayExplicitTracks;
+  private final boolean displayTrackCover;
 
-  public SpotifyUserSnapshot(Player player, Extras extras) {
+  public SpotifyUserSnapshot(Player player, Extras extras, SpotifyAddon addon) {
     super(extras);
-    this.track = SpotifyAddon.get().getController().getTrackOf(player.getUniqueId());
+    SpotifyConfiguration configuration = addon.configuration();
+    this.track = this.resolveTrack(player, configuration, addon.getController());
+    this.displayExplicitTracks = configuration.displayExplicitTracks().get();
+    this.displayTrackCover = configuration.displayTrackCover().get();
   }
 
   public @Nullable SharedTrack getTrack() {
     return this.track;
+  }
+
+  public boolean displayExplicitTracks() {
+    return this.displayExplicitTracks;
+  }
+
+  public boolean displayTrackCover() {
+    return this.displayTrackCover;
+  }
+
+  private SharedTrack resolveTrack(Player player, SpotifyConfiguration configuration, TrackSharingController controller) {
+    if (!configuration.enabled().get()) {
+      return null;
+    }
+
+    if (!configuration.displayTracks().get()) {
+      return null;
+    }
+
+    return controller.getTrackOf(player.getUniqueId());
   }
 }

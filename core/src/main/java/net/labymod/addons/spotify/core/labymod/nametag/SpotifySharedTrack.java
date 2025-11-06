@@ -15,13 +15,13 @@
  */
 package net.labymod.addons.spotify.core.labymod.nametag;
 
-import net.labymod.addons.spotify.core.SpotifyConfiguration;
 import net.labymod.addons.spotify.core.labymod.snapshot.SpotifyExtraKeys;
 import net.labymod.addons.spotify.core.labymod.snapshot.SpotifyUserSnapshot;
 import net.labymod.addons.spotify.core.sharing.SharedTrack;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.entity.player.tag.tags.ComponentNameTag;
+import net.labymod.api.client.gfx.pipeline.renderer.text.FontFlags;
 import net.labymod.api.client.gui.HorizontalAlignment;
 import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.render.matrix.Stack;
@@ -31,6 +31,7 @@ import net.labymod.api.laby3d.pipeline.RenderStates;
 import net.labymod.api.laby3d.render.queue.CustomGeometryRenderer;
 import net.labymod.api.laby3d.render.queue.SubmissionCollector;
 import net.labymod.api.laby3d.render.queue.submissions.IconSubmission.DisplayMode;
+import net.labymod.api.loader.MinecraftVersions;
 import net.labymod.laby3d.api.vertex.VertexConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -38,6 +39,7 @@ import java.util.List;
 
 public class SpotifySharedTrack extends ComponentNameTag {
 
+  private static final boolean INVERSE_DEPTH = MinecraftVersions.V1_20_6.orOlder();
   private static final float BACKGROUND_DEPTH = -0.03F;
   private static final float PROGRESS_BACKGROUND_BAR_DEPTH = 0.03F;
   private static final float PROGRESS_PROGRESS_BAR_DEPTH = 0.04F;
@@ -49,31 +51,7 @@ public class SpotifySharedTrack extends ComponentNameTag {
   private double progress;
   private HorizontalAlignment alignment = HorizontalAlignment.CENTER;
 
-  private boolean enabled;
-  private boolean displayTracks;
-  private boolean displayExplicitTracks;
-  private boolean displayTrackCover;
-
-  public SpotifySharedTrack(SpotifyConfiguration configuration) {
-    this.enabled = configuration.getAndAddListener(
-        configuration.enabled(),
-        value -> this.enabled = value
-    );
-
-    this.displayTracks = configuration.getAndAddListener(
-        configuration.displayTracks(),
-        value -> this.displayTracks = value
-    );
-
-    this.displayExplicitTracks = configuration.getAndAddListener(
-        configuration.displayExplicitTracks(),
-        value -> this.displayExplicitTracks = value
-    );
-
-    this.displayTrackCover = configuration.getAndAddListener(
-        configuration.displayTrackCover(),
-        value -> this.displayTrackCover = value
-    );
+  public SpotifySharedTrack() {
   }
 
   @Override
@@ -82,26 +60,21 @@ public class SpotifySharedTrack extends ComponentNameTag {
       return super.buildComponents(snapshot);
     }
 
-    if (!this.enabled || !this.displayTracks) {
-      return super.buildComponents(snapshot);
-    }
-
     if (!this.snapshot.has(SpotifyExtraKeys.SPOTIFY_USER)) {
       return super.buildComponents(snapshot);
     }
 
     SpotifyUserSnapshot spotifyUser = this.snapshot.get(SpotifyExtraKeys.SPOTIFY_USER);
-
     SharedTrack track = spotifyUser.getTrack();
     if (track == null) {
       return super.buildComponents(snapshot);
     }
 
-    if (track.isExplicit() && !this.displayExplicitTracks) {
+    if (track.isExplicit() && !spotifyUser.displayExplicitTracks()) {
       return super.buildComponents(snapshot);
     }
 
-    this.icon = this.displayTrackCover ? track.getIcon() : null;
+    this.icon = spotifyUser.displayTrackCover() ? track.getIcon() : null;
     this.alignment = this.icon == null ? HorizontalAlignment.CENTER : HorizontalAlignment.LEFT;
     this.progress = track.getDaemonProgress();
     return track.getComponents();
@@ -126,7 +99,7 @@ public class SpotifySharedTrack extends ComponentNameTag {
         new ColoredRectangle(
             -1.0F, -1.0F,
             backgroundWidth + 1.0F, size + 1.0F,
-            BACKGROUND_DEPTH,
+            INVERSE_DEPTH ? -BACKGROUND_DEPTH : BACKGROUND_DEPTH,
             backgroundArgb
         )
     );
@@ -149,7 +122,7 @@ public class SpotifySharedTrack extends ComponentNameTag {
             RenderStates.GUI,
             new ColoredRectangle(
                 0.0F, progressBarTop, size, size,
-                PROGRESS_BACKGROUND_BAR_DEPTH,
+                INVERSE_DEPTH ? -PROGRESS_BACKGROUND_BAR_DEPTH : PROGRESS_BACKGROUND_BAR_DEPTH,
                 PROGRESS_BAR_BACKGROUND_COLOR
             )
         );
@@ -159,7 +132,7 @@ public class SpotifySharedTrack extends ComponentNameTag {
             RenderStates.GUI,
             new ColoredRectangle(
                 0.0F, progressBarTop, (float) (size * this.progress), size,
-                PROGRESS_PROGRESS_BAR_DEPTH,
+                INVERSE_DEPTH ? -PROGRESS_PROGRESS_BAR_DEPTH : PROGRESS_PROGRESS_BAR_DEPTH,
                 PROGRESS_BAR_COLOR
             )
         );
@@ -181,7 +154,15 @@ public class SpotifySharedTrack extends ComponentNameTag {
       xOffset = (this.getWidth() - this.fontRenderer.getWidth(component)) / 2.0F;
     }
 
-    super.submitText(stack, submissionCollector, snapshot, component, xOffset, yOffset);
+    submissionCollector.order(3).submitComponent(
+        stack,
+        component,
+        xOffset, yOffset,
+        DEFAULT_TEXT_COLOR,
+        snapshot.lightCoords(),
+        this.getBackgroundColor(snapshot),
+        FontFlags.DISPLAY_MODE_NORMAL
+    );
   }
 
   @Override
@@ -196,7 +177,7 @@ public class SpotifySharedTrack extends ComponentNameTag {
 
   @Override
   public float getWidth() {
-    return super.getWidth() + (this.displayTrackCover ? this.getHeight() : 0);
+    return super.getWidth() + (this.icon != null ? this.getHeight() : 0);
   }
 
   @Override

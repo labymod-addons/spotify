@@ -31,7 +31,7 @@ labyMod {
         author = "LabyMedia GmbH"
         minecraftVersion = "*"
         version = rootProject.version.toString()
-        releaseChannel = ReleaseChannels.SNAPSHOT
+        releaseChannel = ReleaseChannels.LOCAL
     }
 }
 
@@ -44,6 +44,7 @@ subprojects {
     version = rootProject.version
 
     repositories {
+        mavenLocal()
         maven { url = uri("https://jitpack.io") }
     }
 

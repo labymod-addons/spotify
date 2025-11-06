@@ -86,7 +86,7 @@ public class SpotifyAddon extends LabyAddon<SpotifyConfiguration> {
     this.labyAPI().tagRegistry().register(
         "spotify_shared_track",
         PositionType.BELOW_NAME,
-        new SpotifySharedTrack(this.configuration())
+        new SpotifySharedTrack()
     );
   }
 
