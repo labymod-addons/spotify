@@ -101,10 +101,8 @@ public class SpotifySharedTrack extends ComponentNameTag {
       return super.buildComponents(snapshot);
     }
 
-    this.icon = track.getIcon();
-    this.alignment = this.icon == null || !this.displayTrackCover
-        ? HorizontalAlignment.CENTER
-        : HorizontalAlignment.LEFT;
+    this.icon = this.displayTrackCover ? track.getIcon() : null;
+    this.alignment = this.icon == null ? HorizontalAlignment.CENTER : HorizontalAlignment.LEFT;
     this.progress = track.getDaemonProgress();
     return track.getComponents();
   }
