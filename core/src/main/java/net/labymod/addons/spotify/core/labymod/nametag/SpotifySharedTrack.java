@@ -38,9 +38,9 @@ import java.util.List;
 
 public class SpotifySharedTrack extends ComponentNameTag {
 
-  private static final float BACKGROUND_DEPTH = -0.003F;
-  private static final float PROGRESS_BACKGROUND_BAR_DEPTH = 0.003F;
-  private static final float PROGRESS_PROGRESS_BAR_DEPTH = 0.004F;
+  private static final float BACKGROUND_DEPTH = -0.03F;
+  private static final float PROGRESS_BACKGROUND_BAR_DEPTH = 0.03F;
+  private static final float PROGRESS_PROGRESS_BAR_DEPTH = 0.04F;
 
   private static final int PROGRESS_BAR_BACKGROUND_COLOR = 0xFF333333;
   private static final int PROGRESS_BAR_COLOR = 0xFF00FF00;
