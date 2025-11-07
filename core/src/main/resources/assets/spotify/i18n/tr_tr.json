@@ -9,7 +9,12 @@
             "spotify": {
                 "name": "Spotify",
                 "showCover": {
-                    "name": "Kapağı Göster"
+                    "name": "Kapağı Göster",
+                    "description": "Şu anki parçanın albüm kapağını göster"
+                },
+                "minimizeIngame": {
+                    "name": "Oyun İçinde Küçült",
+                    "description": "Oyun sırasında widget'ı küçültün ve sohbet açıldığında tekrar büyütün. Devre dışı bırakılırsa, widget kalıcı olarak büyütülür."
                 }
             },
             "spotify_track": {
