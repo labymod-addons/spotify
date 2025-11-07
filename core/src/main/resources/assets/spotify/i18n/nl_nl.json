@@ -1,1 +1,25 @@
-{}
+{
+    "spotify": {
+        "bulletPoint": {
+            "open": {
+                "name": "Open huidige nummer in Spotify"
+            }
+        },
+        "hudWidget": {
+            "spotify_track": {
+                "name": "Spotify-nummer"
+            },
+            "spotify": {
+                "name": "Spotify",
+                "showCover": {
+                    "name": "Omslag weergeven",
+                    "description": "Toon de albumhoes van het huidige nummer"
+                },
+                "minimizeIngame": {
+                    "name": "Minimaliseren in spel",
+                    "description": "Minimaliseer de widget wanneer je in een spel zit en maximaliseer deze opnieuw wanneer de chat wordt geopend. Als uitgeschakeld, blijft de widget permanent gemaximaliseerd."
+                }
+            }
+        }
+    }
+}
