@@ -5,6 +5,10 @@
                 "name": "Spotify",
                 "minimizeIngame": {
                     "name": "Minimer I Spillet"
+                },
+                "showCover": {
+                    "name": "Vis omslag",
+                    "description": "Vis albumcoveret for det aktuelle nummer"
                 }
             },
             "spotify_track": {
@@ -22,7 +26,15 @@
                 "name": "Aktiveret"
             },
             "shareTracks": {
-                "name": "Del Nuværende Sang"
+                "name": "Del Nuværende Sang",
+                "description": "Del den sang, du lytter til lige nu, med andre spillere via Spotify-tilføjelsen"
+            },
+            "displayTrackCover": {
+                "name": "Vis sangcover"
+            },
+            "displayExplicitTracks": {
+                "name": "Vis eksplicitte sange",
+                "description": "Vis sange markeret som eksplicitte"
             }
         }
     }
