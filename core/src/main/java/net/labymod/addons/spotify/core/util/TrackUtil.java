@@ -40,7 +40,7 @@ public class TrackUtil {
 
   private static final Cache<Icon> ICON_CACHE = new Cache<>(1000 * 60 * 30, icon -> {
     ResourceLocation resourceLocation = icon.getResourceLocation();
-    if (Objects.equals(resourceLocation, Textures.ICON_TEXTURE)) {
+    if (Objects.equals(resourceLocation, Textures.ICON_TEXTURE.resource())) {
       return; // Don't release the default icon texture
     }
 
