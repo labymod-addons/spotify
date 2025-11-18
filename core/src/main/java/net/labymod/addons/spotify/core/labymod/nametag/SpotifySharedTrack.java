@@ -15,6 +15,7 @@
  */
 package net.labymod.addons.spotify.core.labymod.nametag;
 
+import java.util.List;
 import net.labymod.addons.spotify.core.labymod.snapshot.SpotifyExtraKeys;
 import net.labymod.addons.spotify.core.labymod.snapshot.SpotifyUserSnapshot;
 import net.labymod.addons.spotify.core.sharing.SharedTrack;
@@ -28,6 +29,7 @@ import net.labymod.api.client.render.matrix.Stack;
 import net.labymod.api.client.render.state.entity.AvatarSnapshot;
 import net.labymod.api.client.render.state.entity.EntitySnapshot;
 import net.labymod.api.laby3d.pipeline.RenderStates;
+import net.labymod.api.laby3d.pipeline.material.LevelMaterial;
 import net.labymod.api.laby3d.render.queue.CustomGeometryRenderer;
 import net.labymod.api.laby3d.render.queue.SubmissionCollector;
 import net.labymod.api.laby3d.render.queue.submissions.IconSubmission.DisplayMode;
@@ -35,7 +37,6 @@ import net.labymod.api.loader.MinecraftVersions;
 import net.labymod.laby3d.api.vertex.VertexConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-import java.util.List;
 
 public class SpotifySharedTrack extends ComponentNameTag {
 
@@ -95,7 +96,7 @@ public class SpotifySharedTrack extends ComponentNameTag {
         .getBackgroundColorWithOpacity(DEFAULT_BACKGROUND_COLOR);
     submissionCollector.submitCustomGeometry(
         stack,
-        RenderStates.GUI,
+        LevelMaterial.builder(RenderStates.GUI).build(),
         new ColoredRectangle(
             -1.0F, -1.0F,
             backgroundWidth + 1.0F, size + 1.0F,
@@ -119,7 +120,7 @@ public class SpotifySharedTrack extends ComponentNameTag {
         float progressBarTop = size - 1.0F;
         submissionCollector.submitCustomGeometry(
             stack,
-            RenderStates.GUI,
+            LevelMaterial.builder(RenderStates.GUI).build(),
             new ColoredRectangle(
                 0.0F, progressBarTop, size, size,
                 INVERSE_DEPTH ? -PROGRESS_BACKGROUND_BAR_DEPTH : PROGRESS_BACKGROUND_BAR_DEPTH,
@@ -129,7 +130,7 @@ public class SpotifySharedTrack extends ComponentNameTag {
 
         submissionCollector.submitCustomGeometry(
             stack,
-            RenderStates.GUI,
+            LevelMaterial.builder(RenderStates.GUI).build(),
             new ColoredRectangle(
                 0.0F, progressBarTop, (float) (size * this.progress), size,
                 INVERSE_DEPTH ? -PROGRESS_PROGRESS_BAR_DEPTH : PROGRESS_PROGRESS_BAR_DEPTH,
@@ -216,7 +217,8 @@ public class SpotifySharedTrack extends ComponentNameTag {
     public void render(Matrix4f pose, VertexConsumer consumer) {
       consumer.addVertex(pose, this.left, this.top, this.depth).setBlankUv().setColor(this.argb);
       consumer.addVertex(pose, this.left, this.bottom, this.depth).setBlankUv().setColor(this.argb);
-      consumer.addVertex(pose, this.right, this.bottom, this.depth).setBlankUv().setColor(this.argb);
+      consumer.addVertex(pose, this.right, this.bottom, this.depth).setBlankUv()
+          .setColor(this.argb);
       consumer.addVertex(pose, this.right, this.top, this.depth).setBlankUv().setColor(this.argb);
     }
   }
