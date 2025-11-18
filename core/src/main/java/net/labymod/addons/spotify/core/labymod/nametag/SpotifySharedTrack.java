@@ -30,6 +30,7 @@ import net.labymod.api.client.render.state.entity.AvatarSnapshot;
 import net.labymod.api.client.render.state.entity.EntitySnapshot;
 import net.labymod.api.laby3d.pipeline.RenderStates;
 import net.labymod.api.laby3d.pipeline.material.LevelMaterial;
+import net.labymod.api.laby3d.pipeline.material.Material;
 import net.labymod.api.laby3d.render.queue.CustomGeometryRenderer;
 import net.labymod.api.laby3d.render.queue.SubmissionCollector;
 import net.labymod.api.laby3d.render.queue.submissions.IconSubmission.DisplayMode;
@@ -90,13 +91,15 @@ public class SpotifySharedTrack extends ComponentNameTag {
     float size = this.getHeight();
     float backgroundWidth = this.getWidth();
 
+    Material guiMaterial = LevelMaterial.builder(RenderStates.GUI).build();
+
     int backgroundArgb = Laby.labyAPI()
         .minecraft()
         .options()
         .getBackgroundColorWithOpacity(DEFAULT_BACKGROUND_COLOR);
     submissionCollector.submitCustomGeometry(
         stack,
-        LevelMaterial.builder(RenderStates.GUI).build(),
+        guiMaterial,
         new ColoredRectangle(
             -1.0F, -1.0F,
             backgroundWidth + 1.0F, size + 1.0F,
@@ -120,7 +123,7 @@ public class SpotifySharedTrack extends ComponentNameTag {
         float progressBarTop = size - 1.0F;
         submissionCollector.submitCustomGeometry(
             stack,
-            LevelMaterial.builder(RenderStates.GUI).build(),
+            guiMaterial,
             new ColoredRectangle(
                 0.0F, progressBarTop, size, size,
                 INVERSE_DEPTH ? -PROGRESS_BACKGROUND_BAR_DEPTH : PROGRESS_BACKGROUND_BAR_DEPTH,
@@ -130,7 +133,7 @@ public class SpotifySharedTrack extends ComponentNameTag {
 
         submissionCollector.submitCustomGeometry(
             stack,
-            LevelMaterial.builder(RenderStates.GUI).build(),
+            guiMaterial,
             new ColoredRectangle(
                 0.0F, progressBarTop, (float) (size * this.progress), size,
                 INVERSE_DEPTH ? -PROGRESS_PROGRESS_BAR_DEPTH : PROGRESS_PROGRESS_BAR_DEPTH,
