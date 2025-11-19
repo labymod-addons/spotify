@@ -77,3 +77,4 @@ build-data.txt
 !libs/*.jar
 
 .assetsroot
+resources_index.json
