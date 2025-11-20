@@ -15,8 +15,6 @@
  */
 package net.labymod.addons.spotify.core.sharing;
 
-import static net.labymod.addons.spotify.core.util.TrackUtil.isTrackIdValid;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -34,7 +32,6 @@ import net.labymod.addons.spotify.core.events.SpotifyDisconnectEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPlaybackChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyPositionChangedEvent;
 import net.labymod.addons.spotify.core.events.SpotifyTrackChangedEvent;
-import net.labymod.addons.spotify.core.util.TrackUtil;
 import net.labymod.api.Laby;
 import net.labymod.api.client.session.Session;
 import net.labymod.api.event.Subscribe;
@@ -89,7 +86,7 @@ public class TrackSharingController {
           && spotifyAPI.isPlaying()
           && this.config.enabled().get()
           && this.config.shareTracks().get()
-          && TrackUtil.isTrackIdValid(track.getId());
+          && track.isIdValid();
 
       JsonObject jsonObject = new JsonObject();
       jsonObject.addProperty("trackId", visible ? track.getId() : null);
@@ -107,11 +104,7 @@ public class TrackSharingController {
       @Nullable String trackId,
       int position
   ) {
-    if (trackId != null && !isTrackIdValid(trackId)) {
-      trackId = null;
-    }
-
-    if (trackId == null) {
+    if (!Track.isTrackIdValid(trackId)) {
       this.sharedTracks.remove(uniqueId);
       return;
     }

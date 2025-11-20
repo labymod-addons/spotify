@@ -20,6 +20,7 @@ import de.labystudio.spotifyapi.model.MediaKey;
 import de.labystudio.spotifyapi.model.Track;
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
 import net.labymod.addons.spotify.core.SpotifyAddon;
+import net.labymod.addons.spotify.core.Textures;
 import net.labymod.addons.spotify.core.Textures.SpriteControls;
 import net.labymod.addons.spotify.core.labymod.hudwidgets.SpotifyHudWidget;
 import net.labymod.addons.spotify.core.util.TrackUtil;
@@ -96,7 +97,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
     boolean leftAligned = this.hudWidget.anchor().isLeft();
     this.addId(leftAligned ? "left" : "right");
 
-    this.coverWidget = new IconWidget(this.hudWidget.getIcon());
+    this.coverWidget = new IconWidget(Icon.texture(Textures.UNKNOWN_COVER));
     this.coverWidget.addId("cover");
 
     if (!maximize) {
@@ -261,7 +262,7 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
 
     this.artistWidget.setVisible(true);
 
-    if (track == null || track.getLength() <= 0 || !TrackUtil.isTrackIdValid(track.getId())) {
+    if (track == null || track.getLength() <= 0 || !track.isIdValid()) {
       this.controlsWidget.setVisible(false);
       return;
     }

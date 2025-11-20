@@ -40,7 +40,7 @@ public class TrackUtil {
 
   private static final Cache<Icon> ICON_CACHE = new Cache<>(1000 * 60 * 30, icon -> {
     ResourceLocation resourceLocation = icon.getResourceLocation();
-    if (Objects.equals(resourceLocation, Textures.ICON_TEXTURE.resource())) {
+    if (Objects.equals(resourceLocation, Textures.UNKNOWN_COVER.resource())) {
       return; // Don't release the default icon texture
     }
 
@@ -53,13 +53,17 @@ public class TrackUtil {
       OpenSpotifyAPI api,
       Track track
   ) {
+    if (!track.isIdValid()) {
+      return Icon.texture(Textures.UNKNOWN_COVER);
+    }
+
     Icon cachedIcon = ICON_CACHE.get(track.getId());
     if (cachedIcon != null) {
       return cachedIcon;
     }
 
     CompletableResourceLocation completable = new CompletableResourceLocation(
-        Textures.ICON_TEXTURE
+        Textures.UNKNOWN_COVER
     );
     ResourceLocation resourceLocation = getResourceLocationForTrackId(track.getId());
 
@@ -106,13 +110,17 @@ public class TrackUtil {
   }
 
   public static synchronized Icon createIcon(OpenTrack track) {
+    if (!Track.isTrackIdValid(track.id)) {
+      return Icon.texture(Textures.UNKNOWN_COVER);
+    }
+
     Icon cachedIcon = ICON_CACHE.get(track.id);
     if (cachedIcon != null) {
       return cachedIcon;
     }
 
     CompletableResourceLocation completable = new CompletableResourceLocation(
-        Textures.ICON_TEXTURE
+        Textures.UNKNOWN_COVER
     );
     ResourceLocation resource = getResourceLocationForTrackId(track.id);
 
@@ -181,18 +189,6 @@ public class TrackUtil {
       }
     }
     return target;
-  }
-
-  public static boolean isTrackIdValid(String trackId) {
-    for (char c : trackId.toCharArray()) {
-      boolean isValidCharacter = c >= 'a' && c <= 'z'
-          || c >= 'A' && c <= 'Z'
-          || c >= '0' && c <= '9';
-      if (!isValidCharacter) {
-        return false;
-      }
-    }
-    return true;
   }
 
 }

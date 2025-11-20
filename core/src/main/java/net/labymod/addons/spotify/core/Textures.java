@@ -23,8 +23,8 @@ import net.labymod.api.client.resources.texture.ThemeTextureLocation;
 
 public class Textures {
 
-  public static final ThemeTextureLocation ICON_TEXTURE = of(
-      "spotify:controls/settings/hud/spotify32",
+  public static final ThemeTextureLocation UNKNOWN_COVER = of(
+      "spotify:unknown_cover",
       32, 32
   );
 
