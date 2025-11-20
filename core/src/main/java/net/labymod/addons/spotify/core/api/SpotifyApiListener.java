@@ -41,28 +41,36 @@ public class SpotifyApiListener implements SpotifyListener {
 
   @Override
   public void onConnect() {
-    this.labyAPI.eventBus().fire(new SpotifyConnectEvent());
+    this.labyAPI.minecraft().executeOnRenderThread(() -> {
+      this.labyAPI.eventBus().fire(new SpotifyConnectEvent());
+    });
   }
 
   @Override
   public void onTrackChanged(Track track) {
-    this.labyAPI.eventBus().fire(new SpotifyTrackChangedEvent(track));
+    this.labyAPI.minecraft().executeOnRenderThread(() -> {
+      this.labyAPI.eventBus().fire(new SpotifyTrackChangedEvent(track));
+    });
   }
 
   @Override
   public void onPositionChanged(int position) {
-    Track track = this.spotifyAPI.getTrack();
-    this.labyAPI.eventBus().fire(new SpotifyPositionChangedEvent(track, position));
+    this.labyAPI.minecraft().executeOnRenderThread(() -> {
+      Track track = this.spotifyAPI.getTrack();
+      this.labyAPI.eventBus().fire(new SpotifyPositionChangedEvent(track, position));
 
-    if (position > 0) {
-      this.spotifyAddon.setReconnectDelay(ReconnectDelay.DEFAULT);
-    }
+      if (position > 0) {
+        this.spotifyAddon.setReconnectDelay(ReconnectDelay.DEFAULT);
+      }
+    });
   }
 
   @Override
   public void onPlayBackChanged(boolean isPlaying) {
-    Track track = this.spotifyAPI.getTrack();
-    this.labyAPI.eventBus().fire(new SpotifyPlaybackChangedEvent(track, isPlaying));
+    this.labyAPI.minecraft().executeOnRenderThread(() -> {
+      Track track = this.spotifyAPI.getTrack();
+      this.labyAPI.eventBus().fire(new SpotifyPlaybackChangedEvent(track, isPlaying));
+    });
   }
 
   @Override
@@ -72,9 +80,11 @@ public class SpotifyApiListener implements SpotifyListener {
 
   @Override
   public void onDisconnect(Exception exception) {
-    this.labyAPI.eventBus().fire(new SpotifyDisconnectEvent());
+    this.labyAPI.minecraft().executeOnRenderThread(() -> {
+      this.labyAPI.eventBus().fire(new SpotifyDisconnectEvent());
 
-    this.spotifyAddon.bumpReconnectDelay();
-    this.spotifyAddon.initializeSpotifyAndResetDelay(true);
+      this.spotifyAddon.bumpReconnectDelay();
+      this.spotifyAddon.initializeSpotifyAndResetDelay(true);
+    });
   }
 }
