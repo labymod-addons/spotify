@@ -1,1 +1,9 @@
-{}
+{
+    "spotify": {
+        "bulletPoint": {
+            "open": {
+                "name": "فتح الأغنية الحالية في spotify"
+            }
+        }
+    }
+}
