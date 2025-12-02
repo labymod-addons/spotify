@@ -1,1 +1,49 @@
-{}
+{
+    "spotify": {
+        "bulletPoint": {
+            "open": {
+                "name": "Otwórz aktualny utwór w Spotify"
+            }
+        },
+        "hudWidget": {
+            "spotify": {
+                "name": "Spotify",
+                "showCover": {
+                    "name": "Pokaż Okładkę",
+                    "description": "Pokaż okładkę albumu aktualnie odtwarzanego utworu"
+                },
+                "minimizeIngame": {
+                    "name": "Minimalizuj w grze",
+                    "description": "Minimalizuj widżet podczas gry i ponownie go maksymalizuj, gdy czat jest otwarty. Jeśli opcja jest wyłączona, widżet będzie zawsze maksymalnie rozwinięty."
+                }
+            }
+        },
+        "settings": {
+            "name": "Spotify",
+            "enabled": {
+                "name": "Włączone"
+            },
+            "displayTracks": {
+                "name": "Pokaż Udostępnione Utwory",
+                "description": "Pokaż utwory, które są udostępnione między Tobą a innymi graczami za pomocą dodatku Spotify"
+            },
+            "shareTracks": {
+                "name": "Udostępnij Aktualny Utwór",
+                "description": "Udostępnij innym graczom utwór, którego aktualnie słuchasz, korzystając z dodatku Spotify"
+            },
+            "displayTrackCover": {
+                "name": "Pokaż Okładkę Utworu",
+                "description": "Pokaż okładkę aktualnie odtwarzanego utworu"
+            },
+            "header": {
+                "sharing": {
+                    "name": "Udostępnianie Utworów (Eksperymentalne)"
+                }
+            },
+            "displayExplicitTracks": {
+                "name": "Pokaż Nieprzyzwoite Utwory",
+                "description": "Pokaż utwory oznaczone jako nieprzyzwoite"
+            }
+        }
+    }
+}
