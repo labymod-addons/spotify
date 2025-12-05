@@ -23,6 +23,11 @@
             "displayExplicitTracks": {
                 "name": "Açık Şarkıları Göster",
                 "description": "Açık içerikli olarak işaretlenmiş şarkıları göster"
+            },
+            "header": {
+                "sharing": {
+                    "name": "Şarkı Paylaşımı (Deneysel)"
+                }
             }
         }
     }
