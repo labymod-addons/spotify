@@ -35,6 +35,15 @@
             "displayExplicitTracks": {
                 "name": "Vis eksplicitte sange",
                 "description": "Vis sange markeret som eksplicitte"
+            },
+            "displayTracks": {
+                "name": "Vis delte sange",
+                "description": "Vis de sange, der deles mellem dig og andre spillere via Spotify-tilføjelsen"
+            },
+            "header": {
+                "sharing": {
+                    "name": "Sangdeling (Eksperimentel)"
+                }
             }
         }
     }
