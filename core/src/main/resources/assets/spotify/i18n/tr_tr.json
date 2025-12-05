@@ -15,6 +15,15 @@
             "spotify_track": {
                 "name": "Spotify Parçası"
             }
+        },
+        "settings": {
+            "displayTrackCover": {
+                "description": "Mevcut şarkının kapağını görüntüle"
+            },
+            "displayExplicitTracks": {
+                "name": "Açık Şarkıları Göster",
+                "description": "Açık içerikli olarak işaretlenmiş şarkıları göster"
+            }
         }
     }
 }
