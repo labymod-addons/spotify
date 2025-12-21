@@ -4,7 +4,8 @@
             "spotify": {
                 "name": "Spotify",
                 "minimizeIngame": {
-                    "name": "Minimer I Spillet"
+                    "name": "Minimer I Spillet",
+                    "description": "Minimer widgetten, mens du er i spil, og maksimer den igen, når chatten er åben. Hvis deaktiveret, vil widgetten være maksimeret permanent."
                 },
                 "showCover": {
                     "name": "Vis omslag",
