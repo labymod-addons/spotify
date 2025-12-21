@@ -31,7 +31,8 @@
                 "description": "Geef de nummers weer die tussen jou en andere spelers worden gedeeld via de Spotify-addon"
             },
             "shareTracks": {
-                "name": "Huidig nummer delen"
+                "name": "Huidig nummer delen",
+                "description": "Deel het lied dat je nu aan het luisteren bent met andere spelers met de Spotify addon"
             },
             "displayTrackCover": {
                 "name": "Albumhoes weergeven"
