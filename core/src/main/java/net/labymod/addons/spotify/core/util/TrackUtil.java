@@ -166,7 +166,7 @@ public class TrackUtil {
       name = name.substring(0, 29) + "...";
     }
 
-    String artist = openTrack.getArtists();
+    String artist = openTrack.getArtistsString();
     if (artist.length() > 32) {
       artist = artist.substring(0, 29) + "...";
     }
@@ -178,12 +178,12 @@ public class TrackUtil {
   }
 
   public static Image getSmallestImage(OpenTrack openTrack) {
-    if (openTrack == null || openTrack.album == null || openTrack.album.images == null) {
+    if (openTrack == null || openTrack.album == null || openTrack.album.getImages() == null) {
       return null; // No images available
     }
 
     Image target = null;
-    for (Image image : openTrack.album.images) {
+    for (Image image : openTrack.album.getImages()) {
       if (target == null || image.width < target.width) {
         target = image;
       }

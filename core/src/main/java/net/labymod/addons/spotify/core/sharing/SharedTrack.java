@@ -72,7 +72,7 @@ public class SharedTrack {
       this.resolve();
     }
 
-    Integer maxPosition = this.openTrack == null ? null : this.openTrack.durationMs;
+    Integer maxPosition = this.openTrack == null ? null : this.openTrack.getDurationMs();
     if (maxPosition == null || maxPosition <= 0
         || this.position <= 0 || this.position > maxPosition) {
       return 0;
@@ -103,7 +103,7 @@ public class SharedTrack {
     if (this.resolveRequired) {
       this.resolve();
     }
-    return this.openTrack != null && this.openTrack.explicit;
+    return this.openTrack != null && this.openTrack.isExplicit();
   }
 
   private void resolve() {
