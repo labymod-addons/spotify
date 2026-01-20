@@ -35,8 +35,11 @@ import net.labymod.api.client.resources.texture.SimpleTexture;
 import net.labymod.api.client.resources.texture.TextureDetails;
 import net.labymod.api.client.resources.texture.TextureRepository;
 import net.labymod.api.client.resources.texture.TextureRepository.TextureRegistrationCallback;
+import net.labymod.api.util.logging.Logging;
 
 public class TrackUtil {
+
+  private static final Logging LOGGER = Logging.create(TrackUtil.class);
 
   private static final Cache<Icon> ICON_CACHE = new Cache<>(1000 * 60 * 30, icon -> {
     ResourceLocation resourceLocation = icon.getResourceLocation();
@@ -44,6 +47,7 @@ public class TrackUtil {
       return; // Don't release the default icon texture
     }
 
+    LOGGER.info("Releasing texture for track icon: " + resourceLocation);
     Laby.references()
         .textureRepository()
         .queueTextureRelease(resourceLocation);
@@ -96,6 +100,7 @@ public class TrackUtil {
 
     Icon icon = Icon.completable(completable);
     ICON_CACHE.push(track.getId(), icon);
+    LOGGER.info("Created new texture for track " + track.getId() + ": " + resourceLocation);
     return icon;
   }
 
@@ -132,6 +137,7 @@ public class TrackUtil {
 
     Icon icon = Icon.completable(completable);
     ICON_CACHE.push(track.id, icon);
+    LOGGER.info("Created new texture for open track " + track.id + ": " + resource);
     return icon;
   }
 
