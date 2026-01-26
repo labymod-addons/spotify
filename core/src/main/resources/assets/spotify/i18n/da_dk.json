@@ -31,7 +31,8 @@
                 "description": "Del den sang, du lytter til lige nu, med andre spillere via Spotify-tilføjelsen"
             },
             "displayTrackCover": {
-                "name": "Vis sangcover"
+                "name": "Vis sangcover",
+                "description": "Vis coveret af den nuværende sang"
             },
             "displayExplicitTracks": {
                 "name": "Vis eksplicitte sange",
