@@ -20,6 +20,22 @@
                     "description": "Minimaliseer de widget wanneer je in een spel zit en maximaliseer deze opnieuw wanneer de chat wordt geopend. Als uitgeschakeld, blijft de widget permanent gemaximaliseerd."
                 }
             }
+        },
+        "settings": {
+            "name": "Spotify",
+            "enabled": {
+                "name": "Ingeschakeld"
+            },
+            "displayTracks": {
+                "name": "Gedeelde nummers weergeven",
+                "description": "Geef de nummers weer die tussen jou en andere spelers worden gedeeld via de Spotify-addon"
+            },
+            "shareTracks": {
+                "name": "Huidig nummer delen"
+            },
+            "displayTrackCover": {
+                "name": "Albumhoes weergeven"
+            }
         }
     }
 }
