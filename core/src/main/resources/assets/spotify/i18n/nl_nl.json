@@ -35,7 +35,17 @@
                 "description": "Deel het lied dat je nu aan het luisteren bent met andere spelers met de Spotify addon"
             },
             "displayTrackCover": {
-                "name": "Albumhoes weergeven"
+                "name": "Albumhoes weergeven",
+                "description": "Geef de hoes van het huidige nummer weer"
+            },
+            "displayExplicitTracks": {
+                "name": "Expliciete nummers weergeven",
+                "description": "Geef nummers met expliciete inhoud weer"
+            },
+            "header": {
+                "sharing": {
+                    "name": "Song delen (Experimenteel)"
+                }
             }
         }
     }
