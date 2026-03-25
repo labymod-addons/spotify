@@ -28,7 +28,7 @@
             },
             "displayTracks": {
                 "name": "Gedeelde nummers weergeven",
-                "description": "Geef de nummers weer die tussen jou en andere spelers worden gedeeld via de Spotify-addon"
+                "description": "Geef de nummers weer die tussen jou en andere spelers worden gedeeld via de Spotify addon"
             },
             "shareTracks": {
                 "name": "Huidig nummer delen",
