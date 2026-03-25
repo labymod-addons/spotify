@@ -7,7 +7,7 @@
         },
         "hudWidget": {
             "spotify_track": {
-                "name": "Spotify-nummer"
+                "name": "Spotify nummer"
             },
             "spotify": {
                 "name": "Spotify",
