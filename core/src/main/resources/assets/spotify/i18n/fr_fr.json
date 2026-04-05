@@ -8,6 +8,12 @@
         "hudWidget": {
             "spotify_track": {
                 "name": "Titre Spotify"
+            },
+            "spotify": {
+                "name": "Spotify",
+                "showCover": {
+                    "name": "Afficher la couverture"
+                }
             }
         }
     }
