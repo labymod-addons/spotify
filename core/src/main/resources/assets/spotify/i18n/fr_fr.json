@@ -1,1 +1,14 @@
-{}
+{
+    "spotify": {
+        "bulletPoint": {
+            "open": {
+                "name": "Ouvrir la chanson en cours dans Spotify"
+            }
+        },
+        "hudWidget": {
+            "spotify_track": {
+                "name": "Titre Spotify"
+            }
+        }
+    }
+}
