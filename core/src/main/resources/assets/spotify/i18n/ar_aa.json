@@ -4,6 +4,14 @@
             "open": {
                 "name": "فتح الأغنية الحالية في Spotify"
             }
+        },
+        "hudWidget": {
+            "spotify_track": {
+                "name": "مسار سبوتيفاي"
+            },
+            "spotify": {
+                "name": "سبوتيفاي"
+            }
         }
     }
 }
