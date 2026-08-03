@@ -1,4 +1,6 @@
 import com.diffplug.spotless.LineEnding
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.compile.JavaCompile
 import net.labymod.labygradle.common.extension.model.labymod.ReleaseChannels
 
 plugins {
@@ -42,6 +44,15 @@ subprojects {
 
     group = rootProject.group
     version = rootProject.version
+
+    extensions.configure<JavaPluginExtension> {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    tasks.withType<JavaCompile>().configureEach {
+        options.release = 21
+    }
 
     repositories {
         mavenLocal()

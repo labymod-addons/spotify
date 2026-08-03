@@ -162,7 +162,7 @@ public class TrackUtil {
   }
 
   public static List<Component> getShortTrackNameAndArtist(OpenTrack openTrack) {
-    String name = openTrack.name;
+    String name = openTrack.name == null ? "" : openTrack.name;
     int bracketIndex = name.indexOf("(");
     if (bracketIndex != -1 && name.indexOf("Remix", bracketIndex) == -1) {
       name = name.substring(0, bracketIndex);
@@ -173,12 +173,15 @@ public class TrackUtil {
     }
 
     String artist = openTrack.getArtistsString();
+    if (artist == null) {
+      artist = "";
+    }
     if (artist.length() > 32) {
       artist = artist.substring(0, 29) + "...";
     }
 
-    String finalName = name.trim();
-    String finalArtist = artist.trim();
+    String finalName = name.trim().isEmpty() ? "Unknown track" : name.trim();
+    String finalArtist = artist.trim().isEmpty() ? "Unknown artist" : artist.trim();
 
     return List.of(Component.text(finalName), Component.text(finalArtist));
   }
