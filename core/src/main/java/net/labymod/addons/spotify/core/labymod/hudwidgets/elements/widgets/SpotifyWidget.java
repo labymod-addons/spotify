@@ -19,6 +19,8 @@ import de.labystudio.spotifyapi.SpotifyAPI;
 import de.labystudio.spotifyapi.model.MediaKey;
 import de.labystudio.spotifyapi.model.Track;
 import de.labystudio.spotifyapi.open.OpenSpotifyAPI;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import net.labymod.addons.spotify.core.SpotifyAddon;
 import net.labymod.addons.spotify.core.Textures;
 import net.labymod.addons.spotify.core.Textures.SpriteControls;
@@ -44,6 +46,16 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
 
   private static final String PROGRESS_VISIBLE_KEY = "--progress-visible";
   private static final String LARGE_PROGRESS_VISIBLE_KEY = "--large-progress-visible";
+
+  // pressMediaKey reads the new track's cover art through WinRT, which blocks forever on the
+  // render thread
+  private static final ExecutorService MEDIA_KEY_EXECUTOR = Executors.newSingleThreadExecutor(
+      runnable -> {
+        Thread thread = new Thread(runnable, "Spotify-MediaKey");
+        thread.setDaemon(true);
+        return thread;
+      }
+  );
 
   private final OpenSpotifyAPI openSpotifyAPI;
   private final SpotifyHudWidget hudWidget;
@@ -282,10 +294,12 @@ public class SpotifyWidget extends FlexibleContentWidget implements Updatable {
       return;
     }
 
-    try {
-      this.spotifyAPI.pressMediaKey(mediaKey);
-    } catch (IllegalArgumentException e) {
-      SpotifyAddon.get().logger().error("Failed to press media key", e);
-    }
+    MEDIA_KEY_EXECUTOR.execute(() -> {
+      try {
+        this.spotifyAPI.pressMediaKey(mediaKey);
+      } catch (IllegalArgumentException e) {
+        SpotifyAddon.get().logger().error("Failed to press media key", e);
+      }
+    });
   }
 }
