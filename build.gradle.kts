@@ -33,7 +33,7 @@ labyMod {
         author = "LabyMedia GmbH"
         minecraftVersion = "*"
         version = rootProject.version.toString()
-        releaseChannel = ReleaseChannels.SNAPSHOT
+        releaseChannel = ReleaseChannels.PRODUCTION
     }
 }
 
