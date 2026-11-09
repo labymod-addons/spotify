@@ -12,7 +12,17 @@
             "enabled": {
                 "name": "Ativado"
             },
-            "name": "Spotify"
+            "name": "Spotify",
+            "shareTracks": {
+                "name": "Compartilhar Música Atual"
+            },
+            "displayTrackCover": {
+                "name": "Exibir Capa da Música"
+            },
+            "displayExplicitTracks": {
+                "description": "Exibir músicas marcadas como explícitas",
+                "name": "Exibir Músicas Explícitas"
+            }
         },
         "bulletPoint": {
             "open": {
